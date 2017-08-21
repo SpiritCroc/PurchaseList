@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#8bc34a</item>
+        <item name="colorPrimaryDark">#689f38</item>
+        <item name="colorAccent">#2196f3</item>
+        <item name="colorIndicatorNotSynced">#f44336</item>
+        <item name="colorListDivider">#1f000000</item>
+        <item name="backgroundColorListItem">@android:color/transparent</item>
+        <item name="backgroundColorListItemSelected">#1e000000</item>
+    </style>
+
+    <style name="AppThemeDark" parent="Theme.AppCompat">
+        <item name="colorPrimary">#8bc34a</item>
+        <item name="colorPrimaryDark">#689f38</item>
+        <item name="colorAccent">#2196f3</item>
+        <item name="colorIndicatorNotSynced">#f44336</item>
+        <item name="colorListDivider">#1fffffff</item>
+        <item name="backgroundColorListItem">@android:color/transparent</item>
+        <item name="backgroundColorListItemSelected">#33ffffff</item>
+    </style>
+
+    <style name="AppThemeDarkToolbarForLightThemes" parent="AppThemeDark">
+        <item name="popupMenuStyle">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="AppThemeLight.NoActionBar">
+        <!-- Use toolbar instead of old school actionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="toolbarStyle">@style/AppThemeDarkToolbarForLightThemes</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="AppThemeDark.NoActionBar">
+        <!-- Use toolbar instead of old school actionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="toolbarStyle">@style/AppThemeDark</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+</resources>

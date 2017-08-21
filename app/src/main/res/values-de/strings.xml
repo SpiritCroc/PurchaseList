@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+    <string name="app_name">Einkaufsliste</string>
+
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_about">Über</string>
+    <string name="action_complete">Erledigt</string>
+    <string name="action_select_all">Alle auswählen</string>
+    <string name="action_show_completed">Erledigte anzeigen</string>
+
+    <plurals name="action_mode_selected_items">
+        <item quantity="one">%d ausgewählt</item>
+        <item quantity="other">%d ausgewählt</item>
+    </plurals>
+
+    <string name="app_title_offline">Offline</string>
+    <string name="app_title_online">Aktuell: %s</string>
+    <string name="app_title_fail">Update fehlgeschlagen</string>
+    <string name="app_title_completed">Erledigt: %s</string>
+
+    <string name="toast_prefs_required">Bitte Serveradresse und Nutzername eingeben</string>
+    <string name="toast_server_error">Fehler bei der Server-Kommunikation, bitte Server-Setup überprüfen</string>
+
+    <string name="add_item_title">Neuer Eintrag</string>
+    <string name="edit_item_title">Eintrag bearbeiten</string>
+    <string name="edit_item_name">Name</string>
+    <string name="edit_item_info">Zusatzinfo</string>
+
+    <string name="re_add_item_title">Erneut hinzufügen</string>
+    <string name="re_add_item_message">\"%s\" wieder zur aktuellen Liste hinzufügen?</string>
+
+    <string name="error_empty">Darf nicht leer sein</string>
+
+    <string name="list_empty">Liste leer</string>
+
+    <!--
+    <string name="date_format_hour_minute">H:mm</string>
+    <string name="date_format_day">dd. MM.</string>
+    <string name="date_format_year">dd. MM. y</string>
+    -->
+
+    <!-- Settings -->
+    <string name="title_settings">Einstellungen</string>
+    <string name="pref_category_general">Allgemein</string>
+    <string name="pref_whoami_title">Nutzername</string>
+    <string name="pref_server_url_title">Serveradresse</string>
+    <string name="pref_server_login_username_title">Login Nutzername</string>
+    <string name="pref_server_login_username_set_summary">Anmeldename für Serverzugriff: %s</string>
+    <string name="pref_server_login_username_unset_summary">Anmeldename für Serverzugriff ist nicht gesetzt</string>
+    <string name="pref_server_login_password_title">Login Passwort</string>
+    <string name="pref_server_login_password_set_summary">Anmeldepasswort für Serverzugriff ist gesetzt</string>
+    <string name="pref_server_login_password_unset_summary">Anmeldepasswort für Serverzugriff ist nicht gesetzt</string>
+    <string name="pref_category_ui">Benutzeroberfläche</string>
+    <string name="pref_theme_title">Design</string>
+    <string name="pref_theme_light">Hell</string>
+    <string name="pref_theme_dark">Dunkel</string>
+    <string name="pref_category_other">Weitere</string>
+    <string name="pref_discard_cached_instructions_title">Offline-Änderungen verwerfen</string>
+    <string name="pref_discard_cached_instructions_summary">%d Änderungen werden bei Möglichkeit an den Server gesendet. Hier klicken, um alle lokalen Änderungen zu verwerfen, welche noch nicht hochgeladen wurden</string>
+    <string name="pref_clear_trusted_certificates_title">Vertraute Zertifikate zurücksetzen</string>
+    <string name="pref_clear_trusted_certificates_summary">Eigene akzeptierte Zertifikate für den Serverzugriff zurücksetzen</string>
+    <string name="pref_clear_trusted_certificates_toast_success">Zertifikate erfolgreich zurückgesetzt</string>
+    <string name="pref_clear_trusted_certificates_toast_failure">Rücksetzen der Zertifikate fehlgeschlagen</string>
+    <string name="pref_dino_title">""</string>
+    <string name="pref_dino_summary_on">An</string>
+    <string name="pref_dino_summary_off">" "</string>
+
+    <string name="pref_date_time_format_title">Datum- und Zeitformat</string>
+    <string name="pref_date_time_format_summary">Formatierung für angezeigte Daten und Zeiten ändern</string>
+    <string name="pref_list_item_creation_date_format_title">Erstellungsdatum</string>
+    <string name="pref_update_time_format_title">Aktualisierungszeit</string>
+
+    <!-- About -->
+    <string name="title_about">Über</string>
+
+    <string name="about_licence_title">Lizenz</string>
+    <string name="about_licence_summary">Diese App wird unter der GNU GENERAL PUBLIC LICENSE, Version 3 zur Verfügung gestellt.</string>
+
+    <string name="about_source_code_title">Quellcode</string>
+    <string name="about_source_code_summary">https://github.com/SpiritCroc/PurchaseList</string>
+
+    <string name="about_category_third_party">Drittanbieter</string>
+
+    <string name="about_third_party_cert4android_title">cert4android</string>
+    <string name="about_third_party_cert4android_summary">Copyright &#169; bitfire web engineering (Ricki Hirner, Bernhard Stockmann).\n\nLicensed under the GNU General Public License, Version 3.</string>
+
+    <string name="about_third_party_material_design_icons_title">Material design icons</string>
+    <string name="about_third_party_material_design_icons_summary">Copyright &#169; Google Inc.\n\nLicensed under the Apache License, Version 2.0.</string>
+
+    <string name="about_third_party_support_title">Support libraries</string>
+    <string name="about_third_party_support_summary">Copyright &#169; The Android Open Source Project.\n\nLicensed under the Apache License, Version 2.0.</string>
+
+
+    <!-- General purpose -->
+    <string name="cancel">@android:string/cancel</string>
+    <string name="ok">@android:string/ok</string>
+</resources>

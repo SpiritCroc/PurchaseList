@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string-array name="sdfp_patterns_entries" translatable="false">
+        <item>@string/sdfp_pattern_y</item>
+        <item>@string/sdfp_pattern_yy</item>
+        <item>@string/sdfp_pattern_M</item>
+        <item>@string/sdfp_pattern_MM</item>
+        <item>@string/sdfp_pattern_MMM</item>
+        <item>@string/sdfp_pattern_MMMM</item>
+        <item>@string/sdfp_pattern_d</item>
+        <item>@string/sdfp_pattern_dd</item>
+        <item>@string/sdfp_pattern_h</item>
+        <item>@string/sdfp_pattern_hh</item>
+        <item>@string/sdfp_pattern_a</item>
+        <item>@string/sdfp_pattern_H</item>
+        <item>@string/sdfp_pattern_HH</item>
+        <item>@string/sdfp_pattern_mm</item>
+    </string-array>
+
+    <string-array name="sdfp_patterns_values" translatable="false">
+        <item>y</item>
+        <item>yy</item>
+        <item>M</item>
+        <item>MM</item>
+        <item>MMM</item>
+        <item>MMMM</item>
+        <item>d</item>
+        <item>dd</item>
+        <item>h</item>
+        <item>hh</item>
+        <item>a</item>
+        <item>H</item>
+        <item>HH</item>
+        <item>mm</item>
+    </string-array>
+
+</resources>

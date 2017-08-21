@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="sdfp_add">Add</string>
+    <string name="sdfp_clear">Clear</string>
+    <string name="sdfp_preview">Preview: %s</string>
+    <string name="sdfp_pattern_separator">" "</string>
+    <string name="sdfp_pattern_y">Year</string>
+    <string name="sdfp_pattern_yy">Year (2 digits)</string>
+    <string name="sdfp_pattern_M">Month</string>
+    <string name="sdfp_pattern_MM">Month (2 digits)</string>
+    <string name="sdfp_pattern_MMM">Month (abbreviated)</string>
+    <string name="sdfp_pattern_MMMM">Month (full name)</string>
+    <string name="sdfp_pattern_d">Day of month</string>
+    <string name="sdfp_pattern_dd">Day of month (2 digits)</string>
+    <string name="sdfp_pattern_h">Hours in am/pm</string>
+    <string name="sdfp_pattern_hh">Hours in am/pm (2 digits)</string>
+    <string name="sdfp_pattern_a">Am/pm</string>
+    <string name="sdfp_pattern_H">Hours in day</string>
+    <string name="sdfp_pattern_HH">Hours in day (2 digits)</string>
+    <string name="sdfp_pattern_mm">Minutes</string>
+    <string name="sdfp_summary_invalid_pattern">Invalid pattern</string>
+    <string name="sdfp_summary_default">%s (default)</string>
+    <string name="sdfp_summary_custom">%s (custom)</string>
+
+    <string name="sdfp_pref_date_formats_explanation_title">How it works</string>
+    <string name="sdfp_pref_date_formats_explanation_summary">The date format is specified by a pattern, interpreted by java\'s SimpleDateFormat. You can build it from some available suggestions, or completely on your own. Leave the setting empty to use the preset.</string>
+
+</resources>

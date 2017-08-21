@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+    <string name="app_name">PurchaseList</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
+    <string name="action_complete">Complete</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_show_completed">Show completed</string>
+
+    <plurals name="action_mode_selected_items">
+        <item quantity="other">%d selected</item>
+    </plurals>
+
+    <string name="app_title_offline">Offline</string>
+    <string name="app_title_online">Updated: %s</string>
+    <string name="app_title_fail">Update failed</string>
+    <string name="app_title_completed">Completed: %s</string>
+
+    <string name="toast_prefs_required">Please enter server url and username</string>
+    <string name="toast_server_error">Server communication error, please check your setup</string>
+
+    <string name="add_item_title">Add item</string>
+    <string name="edit_item_title">Edit item</string>
+    <string name="edit_item_name">Name</string>
+    <string name="edit_item_info">Additional info</string>
+
+    <string name="re_add_item_title">Re-add item</string>
+    <string name="re_add_item_message">Add \"%s\" to the current list again?</string>
+
+    <string name="error_empty">Must not be empty</string>
+
+    <string name="list_empty">List empty</string>
+
+    <!--
+    <string name="date_format_hour_minute">H:mm</string>
+    <string name="date_format_day">dd. MM.</string>
+    <string name="date_format_year">dd. MM. y</string>
+    -->
+
+    <!-- Settings -->
+    <string name="title_settings">Settings</string>
+    <string name="pref_category_general">General</string>
+    <string name="pref_whoami_title">Username</string>
+    <string name="pref_server_url_title">Server URL</string>
+    <string name="pref_server_login_username_title">Login username</string>
+    <string name="pref_server_login_username_set_summary">Username for server access: %s</string>
+    <string name="pref_server_login_username_unset_summary">Username for server access is not set</string>
+    <string name="pref_server_login_password_title">Login password</string>
+    <string name="pref_server_login_password_set_summary">Password for server access is set</string>
+    <string name="pref_server_login_password_unset_summary">Password for server access is not set</string>
+    <string name="pref_category_ui">User interface</string>
+    <string name="pref_theme_title">Theme</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_dark">Dark</string>
+    <string name="pref_category_other">Other</string>
+    <string name="pref_discard_cached_instructions_title">Discard offline instructions</string>
+    <string name="pref_discard_cached_instructions_summary">%d requests will be sent to the server when available. Click here to undo all local changes that are not uploaded yet</string>
+    <string name="pref_clear_trusted_certificates_title">Reset trusted certificates</string>
+    <string name="pref_clear_trusted_certificates_summary">Reset custom certificate rules for server access</string>
+    <string name="pref_clear_trusted_certificates_toast_success">Certificates successfully reset</string>
+    <string name="pref_clear_trusted_certificates_toast_failure">Resetting certificates failed</string>
+    <string name="pref_dino_title">""</string>
+    <string name="pref_dino_summary_on">On</string>
+    <string name="pref_dino_summary_off">" "</string>
+
+    <string name="pref_date_time_format_title">Date/time format</string>
+    <string name="pref_date_time_format_summary">Change the format of the displayed dates and times</string>
+    <string name="pref_list_item_creation_date_format_title">Item creation date</string>
+    <string name="pref_update_time_format_title">Last update time</string>
+
+    <!-- About -->
+    <string name="title_about">About</string>
+
+    <string name="about_licence_title">Licence</string>
+    <string name="about_licence_summary">This app is published under the GNU General Public License, Version 3.</string>
+
+    <string name="about_source_code_title">Source code</string>
+    <string name="about_source_code_summary">https://github.com/SpiritCroc/PurchaseList</string>
+    <string name="about_source_code_link" translatable="false">https://github.com/SpiritCroc/PurchaseList</string>
+
+    <string name="about_category_third_party">Third party</string>
+
+    <string name="about_third_party_cert4android_title">cert4android</string>
+    <string name="about_third_party_cert4android_summary">Copyright &#169; bitfire web engineering (Ricki Hirner, Bernhard Stockmann).\n\nLicensed under the GNU General Public License, Version 3.</string>
+    <string name="about_third_party_cert4android_link" translatable="false">https://gitlab.com/bitfireAT/cert4android.git</string>
+
+    <string name="about_third_party_material_design_icons_title">Material design icons</string>
+    <string name="about_third_party_material_design_icons_summary">Copyright &#169; Google Inc.\n\nLicensed under the Apache License, Version 2.0.</string>
+    <string name="about_third_party_material_design_icons_link" translatable="false">https://material.io/icons/</string>
+
+    <string name="about_third_party_support_title">Support libraries</string>
+    <string name="about_third_party_support_summary">Copyright &#169; The Android Open Source Project.\n\nLicensed under the Apache License, Version 2.0.</string>
+    <string name="about_third_party_support_link" translatable="false">https://developer.android.com/topic/libraries/support-library/index.html</string>
+
+
+    <!-- General purpose -->
+    <string name="cancel">@android:string/cancel</string>
+    <string name="ok">@android:string/ok</string>
+</resources>

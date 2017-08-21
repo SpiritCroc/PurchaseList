@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2017 SpiritCroc
+    Email: spiritcroc@gmail.com
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <string name="sdfp_add">Hinzufügen</string>
+    <string name="sdfp_clear">Löschen</string>
+    <string name="sdfp_preview">Vorschau: %s</string>
+    <string name="sdfp_pattern_separator">" "</string>
+    <string name="sdfp_pattern_y">Jahr</string>
+    <string name="sdfp_pattern_yy">Jahr (2 Stellen)</string>
+    <string name="sdfp_pattern_M">Monat</string>
+    <string name="sdfp_pattern_MM">Monat (2 Stellen)</string>
+    <string name="sdfp_pattern_MMM">Monat (abgekürzt)</string>
+    <string name="sdfp_pattern_MMMM">Monat (ganzer Name)</string>
+    <string name="sdfp_pattern_d">Tag des Monats</string>
+    <string name="sdfp_pattern_dd">Tag des Monats (2 Stellen)</string>
+    <string name="sdfp_pattern_h">Stunden bis 12</string>
+    <string name="sdfp_pattern_hh">Stunden bis 12 (2 Stellen)</string>
+    <string name="sdfp_pattern_a">Vormittag/Nachmittag</string>
+    <string name="sdfp_pattern_H">Stunden bis 24</string>
+    <string name="sdfp_pattern_HH">Stunden bis 24 (2 Stellen)</string>
+    <string name="sdfp_pattern_mm">Minuten</string>
+    <string name="sdfp_summary_invalid_pattern">Ungültiges Schema</string>
+    <string name="sdfp_summary_default">%s (Voreinstellung)</string>
+    <string name="sdfp_summary_custom">%s (Benutzerdefiniert)</string>
+
+    <string name="sdfp_pref_date_formats_explanation_title">Wie es funktioniert</string>
+    <string name="sdfp_pref_date_formats_explanation_summary">Das Datumsformat wird durch ein Schema festgelegt, welches von Javas SimpleDateFormat interpretiert wird. Es kann im Folgenden aus einigen Vorschlägen zusammengesetzt, oder auch komplett selbst erstellt werden. Zur Verwendung der Voreinstellung Feld freilassen!</string>
+
+</resources>
