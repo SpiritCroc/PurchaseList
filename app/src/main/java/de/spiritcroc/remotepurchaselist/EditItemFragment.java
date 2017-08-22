@@ -29,10 +29,12 @@ import android.widget.TextView;
 
 public class EditItemFragment extends DialogFragment {
 
-    public static final String KEY_ADD_ITEM = DialogFragment.class.getName() + ".add_item";
-    public static final String KEY_EDIT_ITEM = DialogFragment.class.getName() + ".edit_item";
+    private static final String KEY_ADD_ITEM = DialogFragment.class.getName() + ".add_item";
+    private static final String KEY_EDIT_ITEM = DialogFragment.class.getName() + ".edit_item";
+    private static final String KEY_INIT_ITEM = DialogFragment.class.getName() + ".init_item";
 
     private boolean mAddItem = true;
+    private Item mInitItem;
     private Item mEditItem;
 
     private OnEditItemResultListener mListener;
@@ -41,6 +43,7 @@ public class EditItemFragment extends DialogFragment {
     private TextView mEditInfo;
 
     public EditItemFragment setEditItem(Item editItem) {
+        mInitItem = editItem;
         mEditItem = editItem.copy();
         mAddItem = false;
         return this;
@@ -56,6 +59,9 @@ public class EditItemFragment extends DialogFragment {
         if (savedInstanceState != null) {
             mAddItem = savedInstanceState.getBoolean(KEY_ADD_ITEM);
             mEditItem = savedInstanceState.getParcelable(KEY_EDIT_ITEM);
+            if (!mAddItem) {
+                mInitItem = savedInstanceState.getParcelable(KEY_INIT_ITEM);
+            }
         }
         if (mAddItem) {
             // Don't discard it by mistake
@@ -100,8 +106,12 @@ public class EditItemFragment extends DialogFragment {
                                 preview.creator =
                                         Settings.getString(getActivity(), Settings.WHOAMI);
                                 preview.creationDate = System.currentTimeMillis();
-                                preview.completionDate = -1;
-                                mListener.onEditItemResult(mAddItem, preview);
+                                preview.completionDate = mAddItem ? -1 : mEditItem.completionDate;
+                                if (mInitItem == null || !preview.name.equals(mInitItem.name)
+                                        || !preview.info.equals(mInitItem.info)) {
+                                    // Something has changed
+                                    mListener.onEditItemResult(mAddItem, preview);
+                                } // else: no update needed, only close dialog
                                 dismiss();
                             }
                         });
@@ -124,6 +134,9 @@ public class EditItemFragment extends DialogFragment {
         }
         outState.putBoolean(KEY_ADD_ITEM, mAddItem);
         outState.putParcelable(KEY_EDIT_ITEM, mEditItem);
+        if (!mAddItem) {
+            outState.putParcelable(KEY_INIT_ITEM, mInitItem);
+        }
     }
 
     public interface OnEditItemResultListener {
