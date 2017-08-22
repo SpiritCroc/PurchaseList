@@ -533,8 +533,8 @@ public class ShowItemsFragment extends Fragment
             }
             if (mGetList) {
                 // Load content
-                result[0] = ServerCommunicator.requestHttp(getActivity(), getRequestSite(), null, null,
-                        null);
+                result[0] = ServerCommunicator.requestHttp(getActivity(), getRequestSite(), null,
+                        null, null);
             }
             return result;
         }
