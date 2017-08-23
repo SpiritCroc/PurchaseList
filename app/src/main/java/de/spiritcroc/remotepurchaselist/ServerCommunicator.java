@@ -31,7 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,8 +49,7 @@ public class ServerCommunicator {
 
     private ServerCommunicator() {}
 
-    public static JSONObject requestHttp(Context context, String site, String parameters,
-                                         Item cachePreview, ArrayList<Long> cacheRemovePreview) {
+    public static JSONObject requestHttp(Context context, String site, String parameters) {
         String address = Settings.getString(context, Settings.SERVER_URL);
         String username = Settings.getString(context, Settings.SERVER_LOGIN_USERNAME);
         String password = Settings.getString(context, Settings.SERVER_LOGIN_PASSWORD);
@@ -62,8 +60,7 @@ public class ServerCommunicator {
         } else {
             authorization = null;
         }
-        return requestHttp(context, address, site, parameters, authorization, cachePreview,
-                cacheRemovePreview);
+        return requestHttp(context, address, site, parameters, authorization);
     }
 
     /**
@@ -78,18 +75,11 @@ public class ServerCommunicator {
      * @param authorization
      * Authorization string for server access (probably generated from username and password).
      * Can be null if not required
-     * @param cachePreview
-     * If not null and request fails, cache the request for later execution,
-     * and provide the given item for an offline preview
-     * @param cacheRemovePreview
-     * If not null and request fails, cache the request for later execution,
-     * and remove the items with the IDs of this list from the offline preview
      * @return
      * The JSONObject that the server returned on success, or null on failure
      */
     private static JSONObject requestHttp(Context context, String address, String site,
-                                         String parameters, String authorization, Item cachePreview,
-                                         ArrayList<Long> cacheRemovePreview) {
+                                         String parameters, String authorization) {
 
         address += site;
 
@@ -158,12 +148,6 @@ public class ServerCommunicator {
         }
 
         if (json == null) {
-            if (cachePreview != null || cacheRemovePreview != null) {
-                HttpPostOfflineCache.addItemToCache(context, site, parameters, cachePreview);
-                if (cacheRemovePreview != null) {
-                    HttpPostOfflineCache.addItemsToRemoveCache(context, cacheRemovePreview);
-                }
-            }
             return null;
         }
         if (DEBUG) Log.d(TAG, "Received result:\n" + json);
@@ -171,12 +155,6 @@ public class ServerCommunicator {
             jObj = new JSONObject(json);
         } catch (JSONException e) {
             e.printStackTrace();
-            if (cachePreview != null || cacheRemovePreview != null) {
-                HttpPostOfflineCache.addItemToCache(context, site, parameters, cachePreview);
-                if (cacheRemovePreview != null) {
-                    HttpPostOfflineCache.addItemsToRemoveCache(context, cacheRemovePreview);
-                }
-            }
             return null;
         }
 

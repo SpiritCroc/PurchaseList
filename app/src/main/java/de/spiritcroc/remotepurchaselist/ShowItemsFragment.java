@@ -74,7 +74,8 @@ public class ShowItemsFragment extends Fragment
             ".edit_item_dialog";
 
     private boolean mDownloading = false;
-    private boolean mDownloadNeeded = true;
+    private boolean mResumeDownloadNeeded = true;
+    private boolean mDirectDownloadNeeded = false;
 
     // Remember theme, so we re-download on theme change, leading to crash
     // because of activity recreation
@@ -160,7 +161,7 @@ public class ShowItemsFragment extends Fragment
                                                            IBinder iBinder) {
                                 if (DEBUG) Log.d(TAG, "cert4android service connected");
                                 mCert4androidReady = true;
-                                if (mDownloadNeeded) {
+                                if (mResumeDownloadNeeded) {
                                     loadContent(true);
                                 }
                             }
@@ -238,10 +239,7 @@ public class ShowItemsFragment extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!mDownloading) {
-                    mDownloading = true;
-                    loadContent(true);
-                }
+                loadContent(true);
             }
         });
 
@@ -257,7 +255,7 @@ public class ShowItemsFragment extends Fragment
         if (mTheme == Settings.getInt(getActivity(), Settings.THEME)) {
             // Don't start download when in action mode, as this would close it
             if (mActionMode == null) {
-                if (mDownloadNeeded) {
+                if (mResumeDownloadNeeded) {
                     if (mCert4androidReady) {
                         loadContent(true);
                     }
@@ -278,7 +276,7 @@ public class ShowItemsFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.action_settings:
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
-                mDownloadNeeded = true;
+                mResumeDownloadNeeded = true;
                 return true;
             case R.id.action_about:
                 startActivity(new Intent(getActivity(), AboutActivity.class));
@@ -287,7 +285,7 @@ public class ShowItemsFragment extends Fragment
                 startActivity(new Intent(getActivity(), MainActivity.class)
                         .putExtra(MainActivity.FRAGMENT_CLASS,
                                 ShowCompletedItemsFragment.class.getName()));
-                mDownloadNeeded = true;
+                mResumeDownloadNeeded = true;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -309,19 +307,18 @@ public class ShowItemsFragment extends Fragment
 
     private void loadContent(boolean download) {
         if (DEBUG) Log.d(TAG, "loadContent: attempt download: " + download);
-        if (mActionMode != null) {
-            // Close action mode, since selected items might change
-            mActionMode.finish();
-            mActionMode = null;
-        }
-        mDownloadNeeded = !download;
+        mResumeDownloadNeeded = !download;
         if (download) {
+            if (mDownloading) {
+                if (DEBUG) Log.d(TAG, "cancel loadContent: already being done");
+                mResumeDownloadNeeded = mDirectDownloadNeeded = true;
+                return;
+            }
             // Check whether settings are fine
             if (TextUtils.isEmpty(Settings.getString(getActivity(), Settings.SERVER_URL)) ||
                     TextUtils.isEmpty(Settings.getString(getActivity(), Settings.WHOAMI))) {
                 showGoToSettingsSnackbar(getString(R.string.toast_prefs_required));
                 mSwipeRefreshLayout.setRefreshing(false);
-                mDownloading = false;
                 return;
             }
 
@@ -329,8 +326,8 @@ public class ShowItemsFragment extends Fragment
                 dismissSnackbar();
                 setTitle(getString(R.string.app_title_offline));
                 mSwipeRefreshLayout.setRefreshing(false);
-                mDownloading = false;
             } else {
+                mDownloading = true;
                 new RequestItemsTask().execute();
                 return;
             }
@@ -339,7 +336,7 @@ public class ShowItemsFragment extends Fragment
             try {
                 loadContent(new JSONObject(
                         PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                .getString(getOfflinePreference(), "")), true);
+                                .getString(getOfflinePreference(), "")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -371,11 +368,14 @@ public class ShowItemsFragment extends Fragment
         // ID also required for edit: server would create us one if we
         // didn't send it, but we need it for offline preview
         params = ServerCommunicator.addParamter(params, Constants.JSON.ID, String.valueOf(item.id));
-        RequestItemsTask task = new RequestItemsTask(item);
-        if (!reloadList) {
-            task.doNotGetList();
+        HttpPostOfflineCache.addItemToCache(getActivity(), add
+                ? Constants.SITE.INSERT_ITEM : Constants.SITE.UPDATE_ITEM, params, item);
+        if (reloadList) {
+            // Offline preview
+            loadContent(false);
+            // Push update
+            loadContent(true);
         }
-        task.execute(add ? Constants.SITE.INSERT_ITEM : Constants.SITE.UPDATE_ITEM, params);
     }
 
     private void completeSelection() {
@@ -384,18 +384,20 @@ public class ShowItemsFragment extends Fragment
             preview.add(mListAdapter.getItem(selectedPos).id);
         }
 
-        new RequestItemsTask(preview).execute(Constants.SITE.COMPLETE_ITEMS,
-                ServerCommunicator.addParamter(null, Constants.JSON.SELECTION,
-                        getSelection()));
-        mActionMode.finish();
-        mActionMode = null;
+        HttpPostOfflineCache.addItemsToRemoveCache(getActivity(), Constants.SITE.COMPLETE_ITEMS,
+                ServerCommunicator.addParamter(null, Constants.JSON.SELECTION, getSelection()),
+                preview);
+        // Offline preview
+        loadContent(false);
+        // Upload stuff
+        loadContent(true);
+        if (mActionMode != null) {
+            mActionMode.finish();
+            mActionMode = null;
+        }
     }
 
     private void selectItem(int position) {
-        // Don't enter actionMode when we're downloading
-        if (mDownloading) {
-            return;
-        }
         if (mSelectedItems.isEmpty()) {
             mActionMode = getActivity().startActionMode(mSelectedItemsActionModeCallback);
         }
@@ -446,7 +448,7 @@ public class ShowItemsFragment extends Fragment
                 public void onClick(View view) {
                     startActivity(new Intent(getActivity(), SettingsActivity.class));
                     dismissSnackbar();
-                    mDownloadNeeded = true;
+                    mResumeDownloadNeeded = true;
                 }
             });
         } else {
@@ -473,132 +475,95 @@ public class ShowItemsFragment extends Fragment
         return PREF_LAST_LIST;
     }
 
-    private class RequestItemsTask extends AsyncTask<String, Void, JSONObject[]> {
-
-        private final String TAG = RequestItemsTask.class.getSimpleName();
-
-        private Item mResultPreview;
-        private ArrayList<Long> mRemovedPreview;
-        private boolean mGetList = true;
-
-        public RequestItemsTask(Item preview) {
-            mResultPreview = preview;
-        }
-
-        public RequestItemsTask(ArrayList<Long> removePreview) {
-            mRemovedPreview = removePreview;
-        }
-
-        public RequestItemsTask() {}
-
-        public RequestItemsTask doNotGetList() {
-            mGetList = false;
-            return this;
-        }
+    private class RequestItemsTask extends AsyncTask<Void, Void, JSONObject> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // If mDownloading is already set, swipeRefreshLayout is already refreshing
-            if (!mDownloading) {
-                mDownloading = true;
-                if (mGetList) {
-                    // Only indicate that we're downloading when we're also getting an updated list
-                    mSwipeRefreshLayout.setRefreshing(true);
-                }
-            }
+            mSwipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
-        protected JSONObject[] doInBackground(String... args) {
+        protected JSONObject doInBackground(Void... args) {
             // Execute pending requests
             HttpPostOfflineCache.executePending(getActivity());
 
-            JSONObject[] result;
-            if (args.length > 0) {
-                // Request server update
-                String requestSite;
-                String params;
-                result = new JSONObject[2];
-                requestSite = args[0];
-                if (args.length > 1) {
-                    params = args[1];
-                } else {
-                    params = null;
-                }
-                result[1] = ServerCommunicator.requestHttp(getActivity(), requestSite, params,
-                        mResultPreview, mRemovedPreview);
-            } else {
-                result = new JSONObject[1];
-            }
-            if (mGetList) {
-                // Load content
-                result[0] = ServerCommunicator.requestHttp(getActivity(), getRequestSite(), null,
-                        null, null);
-            }
-            return result;
+            /*
+            // Emulate slow internet
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {}
+            */
+
+            // Download site
+            return ServerCommunicator.requestHttp(getActivity(), getRequestSite(), null);
         }
 
         @Override
-        protected void onPostExecute(JSONObject[] result) {
+        protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
             mSwipeRefreshLayout.setRefreshing(false);
             mDownloading = false;
-            if (result.length == 0) {
-                Log.e(TAG, "onPostExecute: no result");
-                return;
-            }
-            if (!mGetList) {
-                // We're done here
-                return;
-            }
             try {
-                if (result[0].getInt(Constants.JSON.SUCCESS) == 0) {
-                    // Not successful
+                try {
+                    if (result.getInt(Constants.JSON.SUCCESS) == 0) {
+                        // Not successful
+                        setTitle(getString(R.string.app_title_fail));
+                        loadContent(false);
+                        return;
+                    }
+                } catch (Exception e) {
+                    // Not an expected response
+                    if (isNetworkConnectionAvailable()) {
+                        // If we're offline now, that's probably the reason, otherwise,
+                        // there probably was a server communication error
+                        showGoToSettingsSnackbar(getText(R.string.toast_server_error));
+                    }
+                    e.printStackTrace();
                     setTitle(getString(R.string.app_title_fail));
                     loadContent(false);
                     return;
                 }
-            } catch (Exception e) {
-                // Not an expected response
-                if (isNetworkConnectionAvailable()) {
-                    // If we're offline now, that's probably the reason, otherwise,
-                    // there probably was a server communication error
-                    showGoToSettingsSnackbar(getText(R.string.toast_server_error));
-                }
-                e.printStackTrace();
-                setTitle(getString(R.string.app_title_fail));
-                loadContent(false);
-                return;
-            }
-            dismissSnackbar();
-            // Try to load with received json
-            if (loadContent(result[0], false)) {
+                dismissSnackbar();
+
+                // Persist for offline
                 if (getOfflinePreference() != null) {
                     PreferenceManager.getDefaultSharedPreferences(getActivity())
                             .edit()
-                            .putString(getOfflinePreference(), result[0].toString())
+                            .putString(getOfflinePreference(), result.toString())
                             .apply();
-                    // HttpPostOfflineCache.clearCache(getActivity());
+                    // Everything is up to date
+                    HttpPostOfflineCache.clearPreviewCacheIfInstructionsEmpty(getActivity());
                 }
-                String updateTimeFormatPattern =
-                        Settings.getString(getActivity(), Settings.UPDATE_TIME_FORMAT);
-                DateFormat updateTimeFormat;
-                if (TextUtils.isEmpty(updateTimeFormatPattern)) {
-                    updateTimeFormat = SimpleDateFormat.getTimeInstance();
+
+                // Try to load with received json
+                if (loadContent(result)) {
+
+                    String updateTimeFormatPattern =
+                            Settings.getString(getActivity(), Settings.UPDATE_TIME_FORMAT);
+                    DateFormat updateTimeFormat;
+                    if (TextUtils.isEmpty(updateTimeFormatPattern)) {
+                        updateTimeFormat = SimpleDateFormat.getTimeInstance();
+                    } else {
+                        updateTimeFormat = new SimpleDateFormat(updateTimeFormatPattern);
+                    }
+                    setTitle(getString(R.string.app_title_online,
+                                 updateTimeFormat.format(System.currentTimeMillis())));
                 } else {
-                    updateTimeFormat = new SimpleDateFormat(updateTimeFormatPattern);
+                    setTitle(getString(R.string.app_title_fail));
+                    loadContent(false);
                 }
-                setTitle(getString(R.string.app_title_online,
-                        updateTimeFormat.format(System.currentTimeMillis())));
-            } else {
-                setTitle(getString(R.string.app_title_fail));
-                loadContent(false);
+            } finally {
+                // Load again if required
+                if (mDirectDownloadNeeded) {
+                    mDirectDownloadNeeded = false;
+                    loadContent(true);
+                }
             }
         }
     }
 
-    private boolean loadContent(JSONObject json, boolean useCachePreview) {
+    private boolean loadContent(JSONObject json) {
         try {
             JSONArray jItems = json.getJSONArray(Constants.JSON.ITEMS);
             int size = jItems.length();
@@ -613,8 +578,23 @@ public class ShowItemsFragment extends Fragment
                 items[i].creationDate = jItem.getLong(Constants.JSON.CREATION_DATE);
                 items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
             }
-            if (useCachePreview && getOfflinePreference() != null) {
+            if (getOfflinePreference() != null) {
                 items = HttpPostOfflineCache.previewCache(getActivity(), items);
+            }
+            // If items have changed, close action mode
+            if (mListAdapter != null && mActionMode != null) {
+                if (items.length != mListAdapter.getCount()) {
+                    mActionMode.finish();
+                    mActionMode = null;
+                } else {
+                    for (int i = 0; i < items.length; i++) {
+                        if (!items[i].equals(mListAdapter.getItem(i))) {
+                            mActionMode.finish();
+                            mActionMode = null;
+                            break;
+                        }
+                    }
+                }
             }
             mListAdapter = new ItemArrayAdapter(getActivity(), R.layout.list_item, items);
             mListView.setAdapter(mListAdapter);
