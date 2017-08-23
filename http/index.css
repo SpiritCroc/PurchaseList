@@ -1,0 +1,32 @@
+body {
+    color: white;
+    background-color: black;
+}
+h1 {
+    color: #8bc34a;
+}
+h2 {
+    color: #8bc34a;
+}
+table {
+    width: 100%;
+}
+table td {
+    background-color: #212121;
+}
+table th {
+    color: #8bc34a;
+}
+input[type=submit] {
+    color: white;
+    background-color: #424242;
+    border: 1px solid #303030;
+    margin: 2px;
+}
+input[type=text] {
+    color: white;
+    background-color: #000000;
+    border: 1px solid #8bc34a;
+    margin: 2px;
+    width: 300px;
+}
