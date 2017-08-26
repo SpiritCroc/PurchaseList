@@ -40,6 +40,7 @@ public final class Constants {
         public static final String NAME = "NAME";
         public static final String INFO = "INFO";
         public static final String CREATOR = "CREATOR";
+        public static final String UPDATED_BY = "UPDATED_BY";
         public static final String CREATION_DATE = "CREATION_DATE";
         public static final String COMPLETION_DATE = "COMPLETION_DATE";
 

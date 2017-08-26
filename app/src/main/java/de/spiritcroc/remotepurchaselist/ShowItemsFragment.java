@@ -362,6 +362,7 @@ public class ShowItemsFragment extends Fragment
     protected void editItem(boolean add, Item item, boolean reloadList) {
         String params = ServerCommunicator.addParamter(null, Constants.JSON.NAME, item.name);
         params = ServerCommunicator.addParamter(params, Constants.JSON.CREATOR, item.creator);
+        params = ServerCommunicator.addParamter(params, Constants.JSON.UPDATED_BY, item.updatedBy);
         params = ServerCommunicator.addParamter(params, Constants.JSON.CREATION_DATE,
                 String.valueOf(item.creationDate));
         params = ServerCommunicator.addParamter(params, Constants.JSON.INFO, item.info);
@@ -384,9 +385,12 @@ public class ShowItemsFragment extends Fragment
             preview.add(mListAdapter.getItem(selectedPos).id);
         }
 
+        String params =
+                ServerCommunicator.addParamter(null, Constants.JSON.SELECTION, getSelection());
+        params = ServerCommunicator.addParamter(params, Constants.JSON.UPDATED_BY,
+                Settings.getString(getActivity(), Settings.WHOAMI));
         HttpPostOfflineCache.addItemsToRemoveCache(getActivity(), Constants.SITE.COMPLETE_ITEMS,
-                ServerCommunicator.addParamter(null, Constants.JSON.SELECTION, getSelection()),
-                preview);
+                params, preview);
         // Offline preview
         loadContent(false);
         // Upload stuff
@@ -573,10 +577,17 @@ public class ShowItemsFragment extends Fragment
                 items[i] = new Item();
                 items[i].id = jItem.getLong(Constants.JSON.ID);
                 items[i].name = jItem.getString(Constants.JSON.NAME);
-                items[i].info = jItem.getString(Constants.JSON.INFO);
+                if (jItem.has(Constants.JSON.INFO)) {
+                    items[i].info = jItem.getString(Constants.JSON.INFO);
+                }
                 items[i].creator = jItem.getString(Constants.JSON.CREATOR);
+                if (jItem.has(Constants.JSON.UPDATED_BY)) {
+                    items[i].updatedBy = jItem.getString(Constants.JSON.UPDATED_BY);
+                }
                 items[i].creationDate = jItem.getLong(Constants.JSON.CREATION_DATE);
-                items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
+                if (jItem.has(Constants.JSON.COMPLETION_DATE)) {
+                    items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
+                }
             }
             if (getOfflinePreference() != null) {
                 items = HttpPostOfflineCache.previewCache(getActivity(), items);
@@ -638,7 +649,15 @@ public class ShowItemsFragment extends Fragment
             }
 
             holder.name.setText(mItems[position].name);
-            holder.creator.setText(mItems[position].creator);
+            if (TextUtils.isEmpty(mItems[position].updatedBy) ||
+                    mItems[position].creator.equals(mItems[position].updatedBy)) {
+                // Creator and updatedBy identical
+                holder.creator.setText(getString(R.string.list_entry_creator,
+                        mItems[position].creator));
+            } else {
+                holder.creator.setText(getString(R.string.list_entry_creator_updated_by,
+                        mItems[position].creator, mItems[position].updatedBy));
+            }
             holder.info.setText(mItems[position].info);
             holder.info.setVisibility(TextUtils.isEmpty(mItems[position].info)
                     ? View.GONE : View.VISIBLE);

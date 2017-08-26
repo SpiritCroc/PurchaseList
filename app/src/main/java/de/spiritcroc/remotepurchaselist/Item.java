@@ -27,8 +27,9 @@ public class Item implements Parcelable {
     public String name;
     public String info;
     public String creator;
+    public String updatedBy;
     public long creationDate;
-    public long completionDate;
+    public long completionDate = -1;
     private boolean mIsCached = false;
 
     public boolean isCached() {
@@ -45,6 +46,7 @@ public class Item implements Parcelable {
         out.name = in.name;
         out.info = in.info;
         out.creator = in.creator;
+        out.updatedBy = in.updatedBy;
         out.creationDate = in.creationDate;
         out.completionDate = in.completionDate;
         out.mIsCached = in.mIsCached;
@@ -55,6 +57,7 @@ public class Item implements Parcelable {
     private static final String SP_NAME = "_name";
     private static final String SP_INFO = "_info";
     private static final String SP_CREATOR = "_creator";
+    private static final String SP_UPDATED_BY = "_updated_by";
     private static final String SP_CREATION_DATE = "_creation_date";
     private static final String SP_COMPLETION_DATE = "_completion_date";
 
@@ -63,6 +66,7 @@ public class Item implements Parcelable {
         editor.putString(baseKey + SP_NAME, name);
         editor.putString(baseKey + SP_INFO, info);
         editor.putString(baseKey + SP_CREATOR, creator);
+        editor.putString(baseKey + SP_UPDATED_BY, updatedBy);
         editor.putLong(baseKey + SP_CREATION_DATE, creationDate);
         editor.putLong(baseKey + SP_COMPLETION_DATE, completionDate);
     }
@@ -74,6 +78,7 @@ public class Item implements Parcelable {
             result.name = sp.getString(baseKey + SP_NAME, null);
             result.info = sp.getString(baseKey + SP_INFO, null);
             result.creator = sp.getString(baseKey + SP_CREATOR, null);
+            result.updatedBy = sp.getString(baseKey + SP_UPDATED_BY, null);
             result.creationDate = sp.getLong(baseKey + SP_CREATION_DATE, 0);
             result.completionDate = sp.getLong(baseKey + SP_COMPLETION_DATE, 0);
             return result;
@@ -86,6 +91,7 @@ public class Item implements Parcelable {
                 .remove(baseKey + SP_NAME)
                 .remove(baseKey + SP_INFO)
                 .remove(baseKey + SP_CREATOR)
+                .remove(baseKey + SP_UPDATED_BY)
                 .remove(baseKey + SP_CREATION_DATE)
                 .remove(baseKey + SP_COMPLETION_DATE);
     }
@@ -109,7 +115,7 @@ public class Item implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLongArray(new long[]{id, creationDate, completionDate});
-        out.writeStringArray(new String[]{name, info, creator});
+        out.writeStringArray(new String[]{name, info, creator, updatedBy});
     }
 
     public static final Parcelable.Creator<Item> CREATOR
@@ -126,6 +132,7 @@ public class Item implements Parcelable {
             item.name = strings[0];
             item.info = strings[1];
             item.creator = strings[2];
+            item.updatedBy = strings[3];
             return item;
         }
 

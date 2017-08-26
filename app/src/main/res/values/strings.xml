@@ -32,6 +32,9 @@
     <string name="app_title_fail">Update failed</string>
     <string name="app_title_completed">Completed: %s</string>
 
+    <string name="list_entry_creator">%s</string>
+    <string name="list_entry_creator_updated_by">%1$s, %2$s</string>
+
     <string name="toast_prefs_required">Please enter server url and username</string>
     <string name="toast_server_error">Server communication error, please check your setup</string>
 

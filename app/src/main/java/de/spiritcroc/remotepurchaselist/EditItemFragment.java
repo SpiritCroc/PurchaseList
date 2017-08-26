@@ -99,12 +99,13 @@ public class EditItemFragment extends DialogFragment {
                                     mEditName.setError(getString(R.string.error_empty));
                                     return;
                                 }
+                                String whoami = Settings.getString(getActivity(), Settings.WHOAMI);
                                 Item preview = new Item();
                                 preview.id = mAddItem ? System.currentTimeMillis() : mEditItem.id;
                                 preview.name = name;
                                 preview.info = mEditInfo.getText().toString();
-                                preview.creator =
-                                        Settings.getString(getActivity(), Settings.WHOAMI);
+                                preview.creator = mAddItem ? whoami : mEditItem.creator;
+                                preview.updatedBy = whoami;
                                 preview.creationDate = System.currentTimeMillis();
                                 preview.completionDate = mAddItem ? -1 : mEditItem.completionDate;
                                 if (mInitItem == null || !preview.name.equals(mInitItem.name)

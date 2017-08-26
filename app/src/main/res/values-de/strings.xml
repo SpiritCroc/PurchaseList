@@ -33,6 +33,9 @@
     <string name="app_title_fail">Update fehlgeschlagen</string>
     <string name="app_title_completed">Erledigt: %s</string>
 
+    <string name="list_entry_creator">%s</string>
+    <string name="list_entry_creator_updated_by">%1$s, %2$s</string>
+
     <string name="toast_prefs_required">Bitte Serveradresse und Nutzername eingeben</string>
     <string name="toast_server_error">Fehler bei der Server-Kommunikation, bitte Server-Setup überprüfen</string>
 
