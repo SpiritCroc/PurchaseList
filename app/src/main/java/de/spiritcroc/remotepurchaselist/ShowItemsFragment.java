@@ -661,7 +661,11 @@ public class ShowItemsFragment extends Fragment
             holder.info.setText(mItems[position].info);
             holder.info.setVisibility(TextUtils.isEmpty(mItems[position].info)
                     ? View.GONE : View.VISIBLE);
-            holder.date.setText(getFormattedDate(mItems[position].creationDate));
+            if (mItems[position].completionDate > mItems[position].creationDate) {
+                holder.date.setText(getFormattedDate(mItems[position].completionDate));
+            } else {
+                holder.date.setText(getFormattedDate(mItems[position].creationDate));
+            }
             holder.notSyncedIndicator.setVisibility(mItems[position].isCached()
                     ? View.VISIBLE : View.GONE);
             convertView.setBackgroundColor(mSelectedItems.contains(position)
