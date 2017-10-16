@@ -111,6 +111,8 @@ public class ServerCommunicator {
                 request.write(parameters);
                 request.flush();
             }
+            int status = connection.getResponseCode();
+            Log.d(TAG, "Connection status response: " + status);
             String line;
             isr = new InputStreamReader(connection.getInputStream());
             reader = new BufferedReader(isr);
