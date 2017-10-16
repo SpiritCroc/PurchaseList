@@ -360,15 +360,15 @@ public class ShowItemsFragment extends Fragment
     }
 
     protected void editItem(boolean add, Item item, boolean reloadList) {
-        String params = ServerCommunicator.addParamter(null, Constants.JSON.NAME, item.name);
-        params = ServerCommunicator.addParamter(params, Constants.JSON.CREATOR, item.creator);
-        params = ServerCommunicator.addParamter(params, Constants.JSON.UPDATED_BY, item.updatedBy);
-        params = ServerCommunicator.addParamter(params, Constants.JSON.CREATION_DATE,
+        String params = ServerCommunicator.addParameter(null, Constants.JSON.NAME, item.name);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.CREATOR, item.creator);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.UPDATED_BY, item.updatedBy);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.CREATION_DATE,
                 String.valueOf(item.creationDate));
-        params = ServerCommunicator.addParamter(params, Constants.JSON.INFO, item.info);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.INFO, item.info);
         // ID also required for edit: server would create us one if we
         // didn't send it, but we need it for offline preview
-        params = ServerCommunicator.addParamter(params, Constants.JSON.ID, String.valueOf(item.id));
+        params = ServerCommunicator.addParameter(params, Constants.JSON.ID, String.valueOf(item.id));
         HttpPostOfflineCache.addItemToCache(getActivity(), add
                 ? Constants.SITE.INSERT_ITEM : Constants.SITE.UPDATE_ITEM, params, item);
         if (reloadList) {
@@ -386,8 +386,8 @@ public class ShowItemsFragment extends Fragment
         }
 
         String params =
-                ServerCommunicator.addParamter(null, Constants.JSON.SELECTION, getSelection());
-        params = ServerCommunicator.addParamter(params, Constants.JSON.UPDATED_BY,
+                ServerCommunicator.addParameter(null, Constants.JSON.SELECTION, getSelection());
+        params = ServerCommunicator.addParameter(params, Constants.JSON.UPDATED_BY,
                 Settings.getString(getActivity(), Settings.WHOAMI));
         HttpPostOfflineCache.addItemsToRemoveCache(getActivity(), Constants.SITE.COMPLETE_ITEMS,
                 params, preview);

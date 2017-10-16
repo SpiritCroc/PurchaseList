@@ -27,8 +27,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -165,11 +167,16 @@ public class ServerCommunicator {
 
     }
 
-    public static String addParamter(String currentParamters, String newParameter,
-                                     String newParameterValue) {
+    public static String addParameter(String currentParameters, String newParameter,
+                                      String newParameterValue) {
+        try {
+            newParameterValue = URLEncoder.encode(newParameterValue, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String result = newParameter + "=" + newParameterValue;
-        if (currentParamters != null) {
-            result = currentParamters + "&" + result;
+        if (currentParameters != null) {
+            result = currentParameters + "&" + result;
         }
         return result;
     }
