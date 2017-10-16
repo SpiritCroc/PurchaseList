@@ -95,7 +95,7 @@ public class ServerCommunicator {
 
         try {
             URL url = new URL(address);
-            certManager = new CustomCertManager(context, true);
+            certManager = new CustomCertManager(context, true, null);
             connection = getHttpUrlConnection(certManager, url);
             if (authorization != null) {
                 connection.setRequestProperty("Authorization", authorization);
