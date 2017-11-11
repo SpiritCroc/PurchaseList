@@ -77,6 +77,10 @@ public class ShowItemsFragment extends Fragment
     private boolean mResumeDownloadNeeded = true;
     private boolean mDirectDownloadNeeded = false;
 
+    private String mServerUrl;
+    private String mServerLoginUsername;
+    private String mServerLoginPassword;
+
     // Remember theme, so we re-download on theme change, leading to crash
     // because of activity recreation
     private int mTheme;
@@ -253,6 +257,30 @@ public class ShowItemsFragment extends Fragment
         super.onResume();
 
         if (mTheme == Settings.getInt(getActivity(), Settings.THEME)) {
+            if (!mResumeDownloadNeeded) {
+                // Check if some server settings changed
+                Context context = getActivity();
+                String serverUrl = Settings.getString(context, Settings.SERVER_URL);
+                String serverLoginUsername = Settings.getString(context,
+                        Settings.SERVER_LOGIN_USERNAME);
+                String serverLoginPassword = Settings.getString(context,
+                        Settings.SERVER_LOGIN_PASSWORD);
+                if (
+                        (serverUrl != mServerUrl &&
+                                serverUrl != null &&
+                                !serverUrl.equals(mServerUrl)) ||
+                        (serverLoginUsername != mServerLoginUsername &&
+                                serverLoginUsername != null &&
+                                !serverLoginUsername.equals(mServerLoginUsername)) ||
+                        (serverLoginPassword != mServerLoginPassword &&
+                                serverLoginPassword != null &&
+                                !serverLoginPassword.equals(mServerLoginPassword))) {
+                    mServerUrl = serverUrl;
+                    mServerLoginUsername = serverLoginUsername;
+                    mServerLoginPassword = serverLoginPassword;
+                    mResumeDownloadNeeded = true;
+                }
+            }
             // Don't start download when in action mode, as this would close it
             if (mActionMode == null) {
                 if (mResumeDownloadNeeded) {
@@ -276,7 +304,6 @@ public class ShowItemsFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.action_settings:
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
-                mResumeDownloadNeeded = true;
                 return true;
             case R.id.action_about:
                 startActivity(new Intent(getActivity(), AboutActivity.class));
@@ -307,8 +334,8 @@ public class ShowItemsFragment extends Fragment
 
     private void loadContent(boolean download) {
         if (DEBUG) Log.d(TAG, "loadContent: attempt download: " + download);
-        mResumeDownloadNeeded = !download;
         if (download) {
+            mResumeDownloadNeeded = false;
             if (mDownloading) {
                 if (DEBUG) Log.d(TAG, "cancel loadContent: already being done");
                 mResumeDownloadNeeded = mDirectDownloadNeeded = true;
@@ -326,6 +353,7 @@ public class ShowItemsFragment extends Fragment
                 dismissSnackbar();
                 setTitle(getString(R.string.app_title_offline));
                 mSwipeRefreshLayout.setRefreshing(false);
+                mResumeDownloadNeeded = true;
             } else {
                 mDownloading = true;
                 new RequestItemsTask().execute();
@@ -452,7 +480,6 @@ public class ShowItemsFragment extends Fragment
                 public void onClick(View view) {
                     startActivity(new Intent(getActivity(), SettingsActivity.class));
                     dismissSnackbar();
-                    mResumeDownloadNeeded = true;
                 }
             });
         } else {
@@ -522,6 +549,9 @@ public class ShowItemsFragment extends Fragment
                         // If we're offline now, that's probably the reason, otherwise,
                         // there probably was a server communication error
                         showGoToSettingsSnackbar(getText(R.string.toast_server_error));
+                    } else {
+                        // Try again later
+                        mResumeDownloadNeeded = true;
                     }
                     e.printStackTrace();
                     setTitle(getString(R.string.app_title_fail));
