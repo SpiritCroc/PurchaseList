@@ -446,7 +446,7 @@ public class ShowItemsFragment extends Fragment
 
     protected void showGoToSettingsSnackbar(CharSequence text) {
         if (mSnackbar == null) {
-            mSnackbar = Snackbar.make(mListView, text, Snackbar.LENGTH_INDEFINITE);
+            mSnackbar = Snackbar.make(mListView, text, Snackbar.LENGTH_LONG);
             mSnackbar.setAction(R.string.ok, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
