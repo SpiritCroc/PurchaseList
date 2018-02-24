@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class EditItemFragment extends DialogFragment {
@@ -118,6 +119,10 @@ public class EditItemFragment extends DialogFragment {
                         });
             }
         });
+        // We want to edit
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
+        );
         return dialog;
     }
 
