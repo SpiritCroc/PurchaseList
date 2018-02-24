@@ -18,6 +18,10 @@
     android:title="@string/title_about">
 
     <Preference
+        android:key="about_app"
+        android:title="@string/about_app_title"
+        android:selectable="false" />
+    <Preference
         android:key="about_licence"
         android:title="@string/about_licence_title"
         android:summary="@string/about_licence_summary"

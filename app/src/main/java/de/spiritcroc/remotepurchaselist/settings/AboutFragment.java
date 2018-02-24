@@ -20,6 +20,7 @@ package de.spiritcroc.remotepurchaselist.settings;
 
 import android.os.Bundle;
 
+import de.spiritcroc.remotepurchaselist.BuildConfig;
 import de.spiritcroc.remotepurchaselist.R;
 
 public class AboutFragment extends BaseSettingsFragment {
@@ -28,5 +29,8 @@ public class AboutFragment extends BaseSettingsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.about);
+
+        findPreference("about_app").setSummary(getString(R.string.about_app_summary,
+                BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
     }
 }
