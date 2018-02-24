@@ -18,3 +18,6 @@ the username and password to your setup before executing), and a few
 php-scripts that are used to access the database from the app. Make also
 sure to create a db_config.php (you can use example_php_config.php as
 template) to configure the database access for the php-scripts.
+
+You can get the app on the [GitHub releases page](https://github.com/SpiritCroc/PurchaseList/releases)
+or on [Google Play](https://play.google.com/apps/testing/de.spiritcroc.remotepurchaselist).
