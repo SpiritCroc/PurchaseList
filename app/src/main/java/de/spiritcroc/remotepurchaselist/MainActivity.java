@@ -32,6 +32,7 @@ public class MainActivity extends BaseActivity {
     private static final String DISPLAY_HOME_AS_UP = MainActivity.class.getName() + ".homeAsUp";
 
     private String mFragmentTag;
+    private Fragment mFragment;
     private boolean mDisplayHomeAsUp = false;
 
     private Toolbar mToolbar;
@@ -48,11 +49,11 @@ public class MainActivity extends BaseActivity {
             mFragmentTag = savedInstanceState.getString(FRAGMENT_TAG);
             mDisplayHomeAsUp = savedInstanceState.getBoolean(DISPLAY_HOME_AS_UP);
         }
-        Fragment fragment = getFragmentManager().findFragmentByTag(mFragmentTag);
-        if (fragment == null) {
-            fragment = getNewFragment();
-            mFragmentTag = getFragmentTag(fragment);
-            getFragmentManager().beginTransaction().replace(R.id.content, fragment, mFragmentTag)
+        mFragment = getFragmentManager().findFragmentByTag(mFragmentTag);
+        if (mFragment == null) {
+            mFragment = getNewFragment();
+            mFragmentTag = getFragmentTag(mFragment);
+            getFragmentManager().beginTransaction().replace(R.id.content, mFragment, mFragmentTag)
                     .commit();
         }
         if (getSupportActionBar() != null) {
@@ -105,5 +106,14 @@ public class MainActivity extends BaseActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mFragment instanceof BackButtonHandler &&
+                ((BackButtonHandler) mFragment).onBackPressed()) {
+            return;
+        }
+        super.onBackPressed();
     }
 }

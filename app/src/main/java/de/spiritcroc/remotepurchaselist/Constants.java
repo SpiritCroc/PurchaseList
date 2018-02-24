@@ -45,5 +45,6 @@ public final class Constants {
         public static final String COMPLETION_DATE = "COMPLETION_DATE";
 
         public static final String SELECTION = "SELECTION";
+        public static final String SEARCH = "SEARCH";
     }
 }

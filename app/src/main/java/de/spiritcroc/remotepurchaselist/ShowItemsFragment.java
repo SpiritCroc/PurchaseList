@@ -332,6 +332,10 @@ public class ShowItemsFragment extends Fragment
         return networkInfo != null && networkInfo.isConnected();
     }
 
+    protected void reload() {
+        loadContent(true);
+    }
+
     private void loadContent(boolean download) {
         if (DEBUG) Log.d(TAG, "loadContent: attempt download: " + download);
         if (download) {
@@ -498,6 +502,10 @@ public class ShowItemsFragment extends Fragment
         return Constants.SITE.GET_LIST;
     }
 
+    protected String getRequestParameters() {
+        return null;
+    }
+
     protected boolean isReadOnly() {
         return false;
     }
@@ -527,7 +535,8 @@ public class ShowItemsFragment extends Fragment
             */
 
             // Download site
-            return ServerCommunicator.requestHttp(getActivity(), getRequestSite(), null);
+            return ServerCommunicator.requestHttp(getActivity(), getRequestSite(),
+                    getRequestParameters());
         }
 
         @Override

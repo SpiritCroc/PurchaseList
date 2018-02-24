@@ -22,6 +22,7 @@
     <string name="action_complete">Complete</string>
     <string name="action_select_all">Select all</string>
     <string name="action_show_completed">Show completed</string>
+    <string name="action_search">Search</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="other">%d selected</item>

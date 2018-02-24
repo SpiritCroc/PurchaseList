@@ -21,6 +21,7 @@ package de.spiritcroc.remotepurchaselist;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,8 +30,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 
-public class ShowCompletedItemsFragment extends ShowItemsFragment {
+public class ShowCompletedItemsFragment extends ShowItemsFragment
+        implements BackButtonHandler, SearchView.OnQueryTextListener {
+
+    private SearchView mSearchView;
+    private String mSearch;
 
     @Override
     protected void setTitle(CharSequence title) {
@@ -40,6 +46,16 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment {
     @Override
     protected String getRequestSite() {
         return Constants.SITE.GET_COMPLETED_LIST;
+    }
+
+    @Override
+    protected String getRequestParameters() {
+        if (TextUtils.isEmpty(mSearch)) {
+            return null;
+        } else {
+            return ServerCommunicator.addParameter(null, Constants.JSON.SEARCH,
+                    mSearch);
+        }
     }
 
     @Override
@@ -57,6 +73,17 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.action_show_completed).setVisible(false);
+        inflater.inflate(R.menu.fragment_show_completed_items, menu);
+        mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus && TextUtils.isEmpty(mSearchView.getQuery())) {
+                    closeSearchView();
+                }
+            }
+        });
     }
 
     @Override
@@ -72,6 +99,35 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment {
                     }
                 });
         return view;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (mSearchView.isIconified()) {
+            return false;
+        } else {
+            closeSearchView();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean onQueryTextChange(String text) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String text) {
+        mSearch = text;
+        reload();
+        return true;
+    }
+
+    private void closeSearchView() {
+        mSearch = null;
+        mSearchView.setQuery("", false);
+        mSearchView.setIconified(true);
+        reload();
     }
 
     private void showReAddDialog(final Item oldItem) {
