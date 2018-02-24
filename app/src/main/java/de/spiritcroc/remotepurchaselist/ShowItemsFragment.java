@@ -18,9 +18,11 @@
 
 package de.spiritcroc.remotepurchaselist;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.TypedArray;
@@ -84,6 +86,8 @@ public class ShowItemsFragment extends Fragment
     // Remember theme, so we re-download on theme change, leading to crash
     // because of activity recreation
     private int mTheme;
+
+    private int mSortOrder;
 
     private ListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -285,6 +289,7 @@ public class ShowItemsFragment extends Fragment
             if (mActionMode == null) {
                 if (mResumeDownloadNeeded) {
                     if (mCert4androidReady) {
+                        mSortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
                         loadContent(true);
                     }
                 }
@@ -314,6 +319,9 @@ public class ShowItemsFragment extends Fragment
                                 ShowCompletedItemsFragment.class.getName()));
                 mResumeDownloadNeeded = true;
                 return true;
+            case R.id.action_sort_order:
+                showSortOrderDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -323,6 +331,42 @@ public class ShowItemsFragment extends Fragment
         imageView.setVisibility(Settings.getBoolean(getActivity(), Settings.DINO)
                 ? View.VISIBLE : View.GONE);
         imageView.setImageResource(R.drawable.dino_sated);
+    }
+
+    private void showSortOrderDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.change_sort_order_title)
+                .setSingleChoiceItems(
+                        getResources().getStringArray(R.array.pref_sort_order_entries),
+                        Settings.getInt(getActivity(), Settings.SORT_ORDER),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                int[] values = getResources()
+                                        .getIntArray(R.array.pref_sort_order_values);
+                                mSortOrder = values[i];
+                            }
+                        }
+                )
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (mSortOrder != Settings.getInt(getActivity(), Settings.SORT_ORDER)) {
+                            Settings.putInt(getActivity(), Settings.SORT_ORDER, mSortOrder);
+                            reload();
+                        }
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if (mSortOrder != Settings.getInt(getActivity(), Settings.SORT_ORDER)) {
+                            Settings.putInt(getActivity(), Settings.SORT_ORDER, mSortOrder);
+                            reload();
+                        }
+                    }
+                })
+                .create().show();
     }
 
     private boolean isNetworkConnectionAvailable() {
@@ -503,7 +547,21 @@ public class ShowItemsFragment extends Fragment
     }
 
     protected String getRequestParameters() {
-        return null;
+        return ServerCommunicator.addParameter(null, Constants.JSON.SORT_ORDER,
+                getSortOrder());
+    }
+
+    protected String getSortOrder() {
+        int sortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
+        switch (sortOrder) {
+            case 1:
+                return Constants.JSON.ORDER_BY + Constants.JSON.CREATION_DATE + Constants.JSON.ASC;
+            case 2:
+                return Constants.JSON.ORDER_BY + Constants.JSON.NAME + Constants.JSON.ASC;
+            case 0:
+            default:
+                return Constants.JSON.ORDER_BY + Constants.JSON.CREATION_DATE + Constants.JSON.DESC;
+        }
     }
 
     protected boolean isReadOnly() {

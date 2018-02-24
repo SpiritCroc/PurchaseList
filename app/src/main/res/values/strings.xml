@@ -23,6 +23,7 @@
     <string name="action_select_all">Select all</string>
     <string name="action_show_completed">Show completed</string>
     <string name="action_search">Search</string>
+    <string name="action_sort_order">Order by</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="other">%d selected</item>
@@ -50,6 +51,11 @@
     <string name="error_empty">Must not be empty</string>
 
     <string name="list_empty">List empty</string>
+
+    <string name="change_sort_order_title">Change sort order</string>
+    <string name="sort_order_latest_first">Latest first</string>
+    <string name="sort_order_oldest_first">Oldest first</string>
+    <string name="sort_order_alphabetically">Alphabetically</string>
 
     <!--
     <string name="date_format_hour_minute">H:mm</string>

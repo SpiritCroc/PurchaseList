@@ -24,4 +24,16 @@
         <item>0</item>
         <item>1</item>
     </string-array>
+
+    <string-array name="pref_sort_order_entries" translatable="false">
+        <item>@string/sort_order_latest_first</item>
+        <item>@string/sort_order_oldest_first</item>
+        <item>@string/sort_order_alphabetically</item>
+    </string-array>
+
+    <integer-array name="pref_sort_order_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </integer-array>
 </resources>

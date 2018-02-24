@@ -51,10 +51,25 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     @Override
     protected String getRequestParameters() {
         if (TextUtils.isEmpty(mSearch)) {
-            return null;
+            return super.getRequestParameters();
         } else {
-            return ServerCommunicator.addParameter(null, Constants.JSON.SEARCH,
-                    mSearch);
+            return ServerCommunicator.addParameter(super.getRequestParameters(),
+                    Constants.JSON.SEARCH, mSearch);
+        }
+    }
+
+    @Override
+    protected String getSortOrder() {
+        int sortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
+        switch (sortOrder) {
+            case 0:
+                return Constants.JSON.ORDER_BY + Constants.JSON.COMPLETION_DATE +
+                        Constants.JSON.DESC;
+            case 1:
+                return Constants.JSON.ORDER_BY + Constants.JSON.COMPLETION_DATE +
+                        Constants.JSON.ASC;
+            default:
+                return super.getSortOrder();
         }
     }
 

@@ -46,5 +46,9 @@ public final class Constants {
 
         public static final String SELECTION = "SELECTION";
         public static final String SEARCH = "SEARCH";
+        public static final String SORT_ORDER = "SORTORDER";
+        public static final String ORDER_BY = "ORDER BY ";
+        public static final String ASC = " ASC";
+        public static final String DESC = " DESC";
     }
 }

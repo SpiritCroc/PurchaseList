@@ -70,6 +70,14 @@ public abstract class Settings {
      */
     public static final String DINO = "dino";
 
+    /**
+     * Sort order
+     * 0: Latest first
+     * 1: Oldest first
+     * 2: Alphabetically
+     */
+    public static final String SORT_ORDER = "sort_order";
+
 
 
     public static class ThemeNoActionBar {
@@ -97,6 +105,8 @@ public abstract class Settings {
         switch (key) {
             case THEME:
                 return getIntFromStringPref(context, key, 0);
+            case SORT_ORDER:
+                return getSharedPreferences(context).getInt(key, 0);
             default:
                 Log.e(TAG, "getInt: unknown key " + key);
                 return 0;
@@ -111,6 +121,10 @@ public abstract class Settings {
             Log.e(TAG, "getIntFromStringPref for key \"" + key + "\": " + e);
             return defaultValue;
         }
+    }
+
+    public static void putInt(Context context, String key, int value) {
+        getSharedPreferences(context).edit().putInt(key, value).apply();
     }
 
     public static String getString(Context context, String key) {
