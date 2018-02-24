@@ -22,4 +22,9 @@
         android:title="@string/pref_simulate_slow_internet"
         android:defaultValue="false" />
 
+    <SwitchPreference
+        android:key="demo_list"
+        android:title="@string/pref_demo_list"
+        android:defaultValue="false" />
+
 </PreferenceScreen>

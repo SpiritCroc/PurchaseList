@@ -61,6 +61,10 @@ public abstract class HttpPostOfflineCache {
 
     public static void addItemToCache(Context context, String site, String params,
                                       Item cachePreview) {
+        if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
+            // Don't modify demo list
+            return;
+        }
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         int instructionCount = sp.getInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
         if (DEBUG) Log.d(TAG, "Adding request to " + site + " with params " + params + " - "
@@ -82,6 +86,10 @@ public abstract class HttpPostOfflineCache {
 
     public static void addItemsToRemoveCache(Context context, String site, String params,
                                              ArrayList<Long> removedIds) {
+        if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
+            // Don't modify demo list
+            return;
+        }
         // Add instructions to cache
         addItemToCache(context, site, params, null);
         // Add preview to cache

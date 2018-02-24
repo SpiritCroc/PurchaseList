@@ -25,6 +25,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -105,27 +106,33 @@ public class ServerCommunicator {
         }
 
         try {
-            URL url = new URL(address);
-            certManager = new CustomCertManager(context, true, true);
-            certManager.appInForeground = true;
-            connection = getHttpUrlConnection(certManager, url);
-            if (authorization != null) {
-                connection.setRequestProperty("Authorization", authorization);
-            }
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            if (parameters == null) {
-                connection.setRequestMethod("GET");
+            InputStream in;
+            if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
+                in = context.getAssets().open("demo-request.txt");
             } else {
-                connection.setRequestMethod("POST");
-                request = new OutputStreamWriter(connection.getOutputStream());
-                request.write(parameters);
-                request.flush();
+                URL url = new URL(address);
+                certManager = new CustomCertManager(context, true, true);
+                certManager.appInForeground = true;
+                connection = getHttpUrlConnection(certManager, url);
+                if (authorization != null) {
+                    connection.setRequestProperty("Authorization", authorization);
+                }
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                if (parameters == null) {
+                    connection.setRequestMethod("GET");
+                } else {
+                    connection.setRequestMethod("POST");
+                    request = new OutputStreamWriter(connection.getOutputStream());
+                    request.write(parameters);
+                    request.flush();
+                }
+                int status = connection.getResponseCode();
+                Log.d(TAG, "Connection status response: " + status);
+                in = connection.getInputStream();
             }
-            int status = connection.getResponseCode();
-            Log.d(TAG, "Connection status response: " + status);
             String line;
-            isr = new InputStreamReader(connection.getInputStream());
+            isr = new InputStreamReader(in);
             reader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             while ((line = reader.readLine()) != null) {

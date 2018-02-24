@@ -97,6 +97,7 @@
     <string name="pref_debug_title">Debug</string>
     <string name="pref_debug_summary">Not for normal users</string>
     <string name="pref_simulate_slow_internet">Simulate slow internet</string>
+    <string name="pref_demo_list">Demo list</string>
 
     <!-- About -->
     <string name="title_about">About</string>

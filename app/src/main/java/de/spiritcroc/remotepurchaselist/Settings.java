@@ -83,6 +83,11 @@ public abstract class Settings {
      */
     public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
 
+    /**
+     * Show a demo list instead of connecting to the server
+     */
+    public static final String DEMO_LIST = "demo_list";
+
 
 
     public static class ThemeNoActionBar {
@@ -151,6 +156,7 @@ public abstract class Settings {
         switch (key) {
             case DINO:
             case SIMULATE_SLOW_INTERNET:
+            case DEMO_LIST:
                 return getSharedPreferences(context).getBoolean(key, false);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);
