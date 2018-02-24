@@ -78,6 +78,11 @@ public abstract class Settings {
      */
     public static final String SORT_ORDER = "sort_order";
 
+    /**
+     * Simulate slow internet
+     */
+    public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
+
 
 
     public static class ThemeNoActionBar {
@@ -145,6 +150,7 @@ public abstract class Settings {
     public static boolean getBoolean(Context context, String key) {
         switch (key) {
             case DINO:
+            case SIMULATE_SLOW_INTERNET:
                 return getSharedPreferences(context).getBoolean(key, false);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);

@@ -585,13 +585,6 @@ public class ShowItemsFragment extends Fragment
             // Execute pending requests
             HttpPostOfflineCache.executePending(getActivity());
 
-            /*
-            // Emulate slow internet
-            try {
-                Thread.sleep(7000);
-            } catch (InterruptedException e) {}
-            */
-
             // Download site
             return ServerCommunicator.requestHttp(getActivity(), getRequestSite(),
                     getRequestParameters());

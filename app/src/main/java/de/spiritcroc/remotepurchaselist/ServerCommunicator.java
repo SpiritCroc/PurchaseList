@@ -95,6 +95,15 @@ public class ServerCommunicator {
         String json = null;
         JSONObject jObj = null;
 
+        if (Settings.getBoolean(context, Settings.SIMULATE_SLOW_INTERNET)) {
+            if (DEBUG) Log.d(TAG, "Simulating slow internet");
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+            }
+            if (DEBUG) Log.d(TAG, "Done simulating slow internet");
+        }
+
         try {
             URL url = new URL(address);
             certManager = new CustomCertManager(context, true, true);
