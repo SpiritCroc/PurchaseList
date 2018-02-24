@@ -22,6 +22,8 @@
     <string name="action_complete">Erledigt</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="action_show_completed">Erledigte anzeigen</string>
+    <string name="action_search">Suche</string>
+    <string name="action_sort_order">Sortierreihenfolge</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="one">%d ausgewählt</item>
@@ -50,6 +52,11 @@
     <string name="error_empty">Darf nicht leer sein</string>
 
     <string name="list_empty">Liste leer</string>
+
+    <string name="change_sort_order_title">Sortierreihenfolge ändern</string>
+    <string name="sort_order_latest_first">Neueste zuerst</string>
+    <string name="sort_order_oldest_first">Älteste zuerst</string>
+    <string name="sort_order_alphabetically">Alphabetisch</string>
 
     <!--
     <string name="date_format_hour_minute">H:mm</string>
@@ -88,8 +95,14 @@
     <string name="pref_list_item_creation_date_format_title">Erstellungsdatum</string>
     <string name="pref_update_time_format_title">Aktualisierungszeit</string>
 
+    <string name="pref_debug_title">Debug</string>
+    <string name="pref_debug_summary">Nicht für normale Nutzer</string>
+    <string name="pref_simulate_slow_internet">Langsames Internet simulieren</string>
+
     <!-- About -->
     <string name="title_about">Über</string>
+
+    <string name="about_app_summary">Version %1$s (%2$d)</string>
 
     <string name="about_licence_title">Lizenz</string>
     <string name="about_licence_summary">Diese App wird unter der GNU GENERAL PUBLIC LICENSE, Version 3 zur Verfügung gestellt.</string>
