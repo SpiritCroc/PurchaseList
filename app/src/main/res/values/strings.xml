@@ -32,7 +32,7 @@
     <string name="app_title_offline">Offline</string>
     <string name="app_title_online">Updated: %s</string>
     <string name="app_title_fail">Update failed</string>
-    <string name="app_title_completed">Completed: %s</string>
+    <string name="app_title_completed">Completed</string>
 
     <string name="list_entry_creator">%s</string>
     <string name="list_entry_creator_updated_by">%1$s, %2$s</string>

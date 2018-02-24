@@ -39,11 +39,6 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     private String mSearch;
 
     @Override
-    protected void setTitle(CharSequence title) {
-        super.setTitle(getString(R.string.app_title_completed, title));
-    }
-
-    @Override
     protected String getRequestSite() {
         return Constants.SITE.GET_COMPLETED_LIST;
     }
@@ -85,6 +80,24 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_show_completed_items, container, false);
+        ViewGroup parentContainer = (ViewGroup) view.findViewById(R.id.show_items_container);
+        View parent = super.onCreateView(inflater, parentContainer, savedInstanceState);
+        parentContainer.addView(parent);
+        // Custom click listener
+        ((ListView) view.findViewById(R.id.item_list))
+                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        showReAddDialog(mListAdapter.getItem(i));
+                    }
+                });
+        return view;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.action_show_completed).setVisible(false);
@@ -99,21 +112,6 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
                 }
             }
         });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        // Custom click listener
-        ((ListView) view.findViewById(R.id.item_list))
-                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        showReAddDialog(mListAdapter.getItem(i));
-                    }
-                });
-        return view;
     }
 
     @Override
