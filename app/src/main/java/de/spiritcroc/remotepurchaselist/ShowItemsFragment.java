@@ -595,6 +595,11 @@ public class ShowItemsFragment extends Fragment
             super.onPostExecute(result);
             mSwipeRefreshLayout.setRefreshing(false);
             mDownloading = false;
+            if (getActivity() == null) {
+                Log.d(TAG, "Discarding request result");
+                // Discard
+                return;
+            }
             try {
                 try {
                     if (result.getInt(Constants.JSON.SUCCESS) == 0) {
