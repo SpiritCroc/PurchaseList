@@ -18,6 +18,7 @@
 
 package de.spiritcroc.remotepurchaselist;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -26,6 +27,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 public class EditItemFragment extends DialogFragment {
@@ -40,7 +44,7 @@ public class EditItemFragment extends DialogFragment {
 
     private OnEditItemResultListener mListener;
 
-    private TextView mEditName;
+    private AutoCompleteTextView mEditName;
     private TextView mEditInfo;
 
     public EditItemFragment setEditItem(Item editItem) {
@@ -57,6 +61,7 @@ public class EditItemFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Activity activity = getActivity();
         if (savedInstanceState != null) {
             mAddItem = savedInstanceState.getBoolean(KEY_ADD_ITEM);
             mEditItem = savedInstanceState.getParcelable(KEY_EDIT_ITEM);
@@ -69,15 +74,29 @@ public class EditItemFragment extends DialogFragment {
             setCancelable(false);
         }
 
-        final View dialogView = getActivity().getLayoutInflater()
+        final View dialogView = activity.getLayoutInflater()
                 .inflate(R.layout.dialog_edit_item, null);
-        mEditName = (TextView) dialogView.findViewById(R.id.name_edit);
+        mEditName = (AutoCompleteTextView) dialogView.findViewById(R.id.name_edit);
         mEditInfo = (TextView) dialogView.findViewById(R.id.info_edit);
         if (mEditItem != null) {
             mEditName.setText(mEditItem.name);
             mEditInfo.setText(mEditItem.info);
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+        mEditName.setAdapter(new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1,
+                SuggestionsRetriever.getCachedSuggestions(activity)));
+        mEditName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (TextUtils.isEmpty(mEditInfo.getText())) {
+                    mEditInfo.setText(SuggestionsRetriever.getCorrespondingInfoSuggestion(activity,
+                            mEditName.getText().toString()));
+                    mEditInfo.setSelectAllOnFocus(true);
+                } else {
+                    mEditInfo.setSelectAllOnFocus(false);
+                }
+            }
+        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                 .setTitle(mAddItem ? R.string.add_item_title : R.string.edit_item_title)
                 .setView(dialogView)
                 .setPositiveButton(R.string.ok, null)
@@ -100,7 +119,7 @@ public class EditItemFragment extends DialogFragment {
                                     mEditName.setError(getString(R.string.error_empty));
                                     return;
                                 }
-                                String whoami = Settings.getString(getActivity(), Settings.WHOAMI);
+                                String whoami = Settings.getString(activity, Settings.WHOAMI);
                                 Item preview = new Item();
                                 preview.id = mAddItem ? System.currentTimeMillis() : mEditItem.id;
                                 preview.name = name;

@@ -70,6 +70,11 @@
             android:key="discard_cached_instructions"
             android:title="@string/pref_discard_cached_instructions_title" />
 
+        <EditTextPreference
+            android:key="name_suggestion_limit"
+            android:title="@string/pref_suggestion_cache_limit_title"
+            android:inputType="number" /><!-- Missing default value on purpose: empty for default -->
+
         <Preference
             android:key="clear_trusted_certificates"
             android:title="@string/pref_clear_trusted_certificates_title"

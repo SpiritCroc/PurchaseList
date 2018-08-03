@@ -89,6 +89,21 @@ public abstract class Settings {
     public static final String HIDE_DUPLICATES_COMPLETED = "hide_duplicate_completed";
 
     /**
+     * Maximum amount of suggestions to retrieve from the server.
+     */
+    public static final String NAME_SUGGESTION_LIMIT = "name_suggestion_limit";
+
+    /**
+     * Cached suggestions for item names retrieved by the server.
+     */
+    public static final String NAME_SUGGESTIONS = "name_suggestions";
+
+    /**
+     * Cached suggestions for item infos corresponding to the names stored in NAME_SUGGESTIONS.
+     */
+    public static final String INFO_SUGGESTIONS = "info_suggestions";
+
+    /**
      * Simulate slow internet
      */
     public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
@@ -98,6 +113,10 @@ public abstract class Settings {
      */
     public static final String DEMO_LIST = "demo_list";
 
+    /**
+     * Separator used for storing arrays in a single shared preference.
+     */
+    private static final String ARRAY_SEP = "䷀";
 
 
     public static class ThemeNoActionBar {
@@ -125,6 +144,8 @@ public abstract class Settings {
         switch (key) {
             case THEME:
                 return getIntFromStringPref(context, key, 0);
+            case NAME_SUGGESTION_LIMIT:
+                return getIntFromStringPref(context, key, 100);
             case SORT_ORDER:
             case SORT_ORDER_COMPLETED:
                 return getSharedPreferences(context).getInt(key, 0);
@@ -148,21 +169,6 @@ public abstract class Settings {
         getSharedPreferences(context).edit().putInt(key, value).apply();
     }
 
-    public static String getString(Context context, String key) {
-        switch (key) {
-            case WHOAMI:
-            case SERVER_URL:
-            case SERVER_LOGIN_USERNAME:
-            case SERVER_LOGIN_PASSWORD:
-            case LIST_ITEM_CREATION_DATE_FORMAT:
-            case UPDATE_TIME_FORMAT:
-                return getSharedPreferences(context).getString(key, "");
-            default:
-                Log.e(TAG, "getString: unknown key " + key);
-                return null;
-        }
-    }
-
     public static boolean getBoolean(Context context, String key) {
         switch (key) {
             case DINO:
@@ -178,5 +184,49 @@ public abstract class Settings {
 
     public static void putBoolean(Context context, String key, boolean value) {
         getSharedPreferences(context).edit().putBoolean(key, value).apply();
+    }
+
+    public static String getString(Context context, String key) {
+        switch (key) {
+            case WHOAMI:
+            case SERVER_URL:
+            case SERVER_LOGIN_USERNAME:
+            case SERVER_LOGIN_PASSWORD:
+            case LIST_ITEM_CREATION_DATE_FORMAT:
+            case UPDATE_TIME_FORMAT:
+                return getSharedPreferences(context).getString(key, "");
+            default:
+                Log.e(TAG, "getString: unknown key " + key);
+                return null;
+        }
+    }
+
+    public static void putString(Context context, String key, String value) {
+        getSharedPreferences(context).edit().putString(key, value).apply();
+    }
+
+    public static String[] getStringArray(Context context, String key) {
+        String s = getSharedPreferences(context).getString(key, null);
+        if (s == null || !s.contains(ARRAY_SEP)) {
+            return new String[0];
+        }
+        return s.split(ARRAY_SEP);
+    }
+
+    public static void putStringArray(Context context, String key, String[] values) {
+        if (values.length == 0) {
+            putString(context, key, "");
+        } else {
+            StringBuilder s = new StringBuilder("");
+            for (String v: values) {
+                if (v.contains(ARRAY_SEP)) {
+                    Log.e(TAG, "putStringArray: array entry contains separator string \"" +
+                            ARRAY_SEP + "\", will be treated as multiple elements");
+                }
+                s.append(v);
+                s.append(ARRAY_SEP);
+            }
+            putString(context, key, s.toString());
+        }
     }
 }

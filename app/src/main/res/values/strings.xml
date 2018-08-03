@@ -82,6 +82,8 @@
     <string name="pref_category_other">Other</string>
     <string name="pref_discard_cached_instructions_title">Discard offline instructions</string>
     <string name="pref_discard_cached_instructions_summary">%d requests will be sent to the server when available. Click here to undo all local changes that are not uploaded yet</string>
+    <string name="pref_suggestion_cache_limit_title">Suggestion cache size</string>
+    <string name="pref_suggestion_cache_limit_summary">%d already completed items will be stored for auto completion. Too high numbers can lead to a poor performance. Restart app to apply.</string>
     <string name="pref_clear_trusted_certificates_title">Reset trusted certificates</string>
     <string name="pref_clear_trusted_certificates_summary">Reset custom certificate rules for server access</string>
     <string name="pref_clear_trusted_certificates_toast_success">Certificates successfully reset</string>

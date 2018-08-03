@@ -294,6 +294,8 @@ public class ShowItemsFragment extends Fragment
                     }
                 }
             }
+            // Update suggestions if necessary
+            SuggestionsRetriever.updateSuggestions(getActivity().getApplicationContext());
         } // else: already up-to date or re-creation is coming
         updateEmptyListImage(mEmptyImage);
     }

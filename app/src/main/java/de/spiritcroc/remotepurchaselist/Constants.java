@@ -27,6 +27,7 @@ public final class Constants {
         public static final String GET_LIST = "get_list.php";
         public static final String GET_COMPLETED_LIST = "get_completed_list.php";
         public static final String GET_FULL_LIST = "get_full_list.php";
+        public static final String GET_SUGGESTIONS = "get_suggestions.php";
         public static final String INSERT_ITEM = "insert_item.php";
         public static final String UPDATE_ITEM = "update_item.php";
         public static final String COMPLETE_ITEMS = "complete_items.php";
@@ -48,6 +49,7 @@ public final class Constants {
         public static final String SEARCH = "SEARCH";
         public static final String SORT_ORDER = "SORTORDER";
         public static final String GROUPING = "GROUPING";
+        public static final String LIMIT = "LIMIT";
         public static final String ORDER_BY = "ORDER BY ";
         public static final String ASC = " ASC";
         public static final String DESC = " DESC";

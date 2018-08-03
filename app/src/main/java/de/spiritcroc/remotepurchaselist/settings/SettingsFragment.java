@@ -45,6 +45,7 @@ public class SettingsFragment extends BaseSettingsFragment
     private ListPreference mTheme;
     private Preference mDiscardCachedInstructions;
     private Preference mClearTrustedCertificates;
+    private Preference mNameSuggestionLimit;
 
     private Snackbar mSnackbar;
 
@@ -60,6 +61,7 @@ public class SettingsFragment extends BaseSettingsFragment
         mTheme = (ListPreference) findPreference(Settings.THEME);
         mDiscardCachedInstructions = findPreference(DISCARD_CACHED_INSTRUCTIONS);
         mClearTrustedCertificates = findPreference(CLEAR_TRUSTED_CERTIFICATES);
+        mNameSuggestionLimit = findPreference(Settings.NAME_SUGGESTION_LIMIT);
 
         mDiscardCachedInstructions.setOnPreferenceClickListener(this);
         mClearTrustedCertificates.setOnPreferenceClickListener(this);
@@ -72,6 +74,7 @@ public class SettingsFragment extends BaseSettingsFragment
         updateServerPassword();
         setValueToSummary(mTheme);
         updateDiscardCachedInstructions();
+        updateNameSuggestionLimit();
     }
 
     @Override
@@ -100,6 +103,8 @@ public class SettingsFragment extends BaseSettingsFragment
             updateServerPassword();
         } else if (Settings.THEME.equals(key)) {
             getActivity().recreate();
+        } else if (Settings.NAME_SUGGESTION_LIMIT.equals(key)) {
+            updateNameSuggestionLimit();
         }
     }
 
@@ -152,6 +157,12 @@ public class SettingsFragment extends BaseSettingsFragment
         mDiscardCachedInstructions.setSummary(
                 getString(R.string.pref_discard_cached_instructions_summary, count));
         mDiscardCachedInstructions.setEnabled(count != 0);
+    }
+
+    private void updateNameSuggestionLimit() {
+        mNameSuggestionLimit.setSummary(
+                getString(R.string.pref_suggestion_cache_limit_summary,
+                        Settings.getInt(getActivity(), Settings.NAME_SUGGESTION_LIMIT)));
     }
 
     private void showSnackbar(CharSequence text, int duration) {
