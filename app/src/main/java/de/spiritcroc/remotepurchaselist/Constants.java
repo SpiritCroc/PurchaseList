@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2018 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -47,8 +47,11 @@ public final class Constants {
         public static final String SELECTION = "SELECTION";
         public static final String SEARCH = "SEARCH";
         public static final String SORT_ORDER = "SORTORDER";
+        public static final String GROUPING = "GROUPING";
         public static final String ORDER_BY = "ORDER BY ";
         public static final String ASC = " ASC";
         public static final String DESC = " DESC";
+
+        public static final String HIDE_OLDER_DUPLICATES = "hideOldDuplicates";
     }
 }

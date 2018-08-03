@@ -84,6 +84,11 @@ public abstract class Settings {
     public static final String SORT_ORDER_COMPLETED = "sort_order_completed";
 
     /**
+     * Whether to not hide duplicate entries with same name and info in completed list.
+     */
+    public static final String HIDE_DUPLICATES_COMPLETED = "hide_duplicate_completed";
+
+    /**
      * Simulate slow internet
      */
     public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
@@ -163,10 +168,15 @@ public abstract class Settings {
             case DINO:
             case SIMULATE_SLOW_INTERNET:
             case DEMO_LIST:
+            case HIDE_DUPLICATES_COMPLETED:
                 return getSharedPreferences(context).getBoolean(key, false);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);
                 return false;
         }
+    }
+
+    public static void putBoolean(Context context, String key, boolean value) {
+        getSharedPreferences(context).edit().putBoolean(key, value).apply();
     }
 }

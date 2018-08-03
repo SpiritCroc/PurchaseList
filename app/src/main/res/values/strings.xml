@@ -24,6 +24,7 @@
     <string name="action_show_completed">Show completed</string>
     <string name="action_search">Search</string>
     <string name="action_sort_order">Order by</string>
+    <string name="action_hide_duplicates">Hide duplicates</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="other">%d selected</item>

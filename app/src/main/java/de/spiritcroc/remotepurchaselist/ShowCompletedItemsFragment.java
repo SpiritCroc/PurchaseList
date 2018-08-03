@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2018 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,6 +38,14 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
 
     private SearchView mSearchView;
     private String mSearch;
+    private boolean mHideDuplicateEntries;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mHideDuplicateEntries =
+                Settings.getBoolean(getActivity(), Settings.HIDE_DUPLICATES_COMPLETED);
+    }
 
     @Override
     protected String getRequestSite() {
@@ -45,12 +54,16 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
 
     @Override
     protected String getRequestParameters() {
-        if (TextUtils.isEmpty(mSearch)) {
-            return super.getRequestParameters();
-        } else {
-            return ServerCommunicator.addParameter(super.getRequestParameters(),
+        String requestParameters = super.getRequestParameters();
+        if (!TextUtils.isEmpty(mSearch)) {
+            requestParameters = ServerCommunicator.addParameter(requestParameters,
                     Constants.JSON.SEARCH, mSearch);
         }
+        if (mHideDuplicateEntries) {
+            requestParameters = ServerCommunicator.addParameter(requestParameters,
+                    Constants.JSON.GROUPING, Constants.JSON.HIDE_OLDER_DUPLICATES);
+        }
+        return requestParameters;
     }
 
     @Override
@@ -117,6 +130,22 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
                 }
             }
         });
+        menu.findItem(R.id.action_hide_duplicates).setChecked(mHideDuplicateEntries);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_hide_duplicates:
+                mHideDuplicateEntries = !mHideDuplicateEntries;
+                item.setChecked(mHideDuplicateEntries);
+                Settings.putBoolean(getActivity(), Settings.HIDE_DUPLICATES_COMPLETED,
+                        mHideDuplicateEntries);
+                reload();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
