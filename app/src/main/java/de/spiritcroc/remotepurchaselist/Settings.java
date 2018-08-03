@@ -79,6 +79,11 @@ public abstract class Settings {
     public static final String SORT_ORDER = "sort_order";
 
     /**
+     * Sort order for completed items, analog to SORT_ORDER
+     */
+    public static final String SORT_ORDER_COMPLETED = "sort_order_completed";
+
+    /**
      * Simulate slow internet
      */
     public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
@@ -116,6 +121,7 @@ public abstract class Settings {
             case THEME:
                 return getIntFromStringPref(context, key, 0);
             case SORT_ORDER:
+            case SORT_ORDER_COMPLETED:
                 return getSharedPreferences(context).getInt(key, 0);
             default:
                 Log.e(TAG, "getInt: unknown key " + key);

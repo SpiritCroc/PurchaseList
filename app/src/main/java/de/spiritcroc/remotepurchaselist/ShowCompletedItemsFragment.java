@@ -55,7 +55,7 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
 
     @Override
     protected String getSortOrder() {
-        int sortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
+        int sortOrder = Settings.getInt(getActivity(), getSortOrderPreference());
         switch (sortOrder) {
             case 0:
                 return Constants.JSON.ORDER_BY + Constants.JSON.COMPLETION_DATE +
@@ -77,6 +77,11 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     protected String getOfflinePreference() {
         // Don't save for offline display
         return null;
+    }
+
+    @Override
+    protected String getSortOrderPreference() {
+        return Settings.SORT_ORDER_COMPLETED;
     }
 
     @Override

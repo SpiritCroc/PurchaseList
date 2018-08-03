@@ -289,7 +289,7 @@ public class ShowItemsFragment extends Fragment
             if (mActionMode == null) {
                 if (mResumeDownloadNeeded) {
                     if (mCert4androidReady) {
-                        mSortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
+                        mSortOrder = Settings.getInt(getActivity(), getSortOrderPreference());
                         loadContent(true);
                     }
                 }
@@ -338,7 +338,7 @@ public class ShowItemsFragment extends Fragment
                 .setTitle(R.string.change_sort_order_title)
                 .setSingleChoiceItems(
                         getResources().getStringArray(R.array.pref_sort_order_entries),
-                        Settings.getInt(getActivity(), Settings.SORT_ORDER),
+                        Settings.getInt(getActivity(), getSortOrderPreference()),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -351,8 +351,9 @@ public class ShowItemsFragment extends Fragment
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (mSortOrder != Settings.getInt(getActivity(), Settings.SORT_ORDER)) {
-                            Settings.putInt(getActivity(), Settings.SORT_ORDER, mSortOrder);
+                        if (mSortOrder != Settings.getInt(getActivity(),
+                                getSortOrderPreference())) {
+                            Settings.putInt(getActivity(), getSortOrderPreference(), mSortOrder);
                             reload();
                         }
                     }
@@ -360,8 +361,9 @@ public class ShowItemsFragment extends Fragment
                 .setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        if (mSortOrder != Settings.getInt(getActivity(), Settings.SORT_ORDER)) {
-                            Settings.putInt(getActivity(), Settings.SORT_ORDER, mSortOrder);
+                        if (mSortOrder != Settings.getInt(getActivity(),
+                                getSortOrderPreference())) {
+                            Settings.putInt(getActivity(), getSortOrderPreference(), mSortOrder);
                             reload();
                         }
                     }
@@ -552,7 +554,7 @@ public class ShowItemsFragment extends Fragment
     }
 
     protected String getSortOrder() {
-        int sortOrder = Settings.getInt(getActivity(), Settings.SORT_ORDER);
+        int sortOrder = Settings.getInt(getActivity(), getSortOrderPreference());
         switch (sortOrder) {
             case 1:
                 return Constants.JSON.ORDER_BY + Constants.JSON.CREATION_DATE + Constants.JSON.ASC;
@@ -570,6 +572,10 @@ public class ShowItemsFragment extends Fragment
 
     protected String getOfflinePreference() {
         return PREF_LAST_LIST;
+    }
+
+    protected String getSortOrderPreference() {
+        return Settings.SORT_ORDER;
     }
 
     private class RequestItemsTask extends AsyncTask<Void, Void, JSONObject> {
