@@ -111,7 +111,7 @@ public class SettingsFragment extends BaseSettingsFragment
             return true;
         } else if (preference == mClearTrustedCertificates) {
             try {
-                CustomCertManager.resetCertificates(getActivity());
+                CustomCertManager.Companion.resetCertificates(getActivity());
                 showSnackbar(getString(R.string.pref_clear_trusted_certificates_toast_success),
                         Snackbar.LENGTH_SHORT);
             } catch (Exception e) {

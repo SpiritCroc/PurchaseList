@@ -112,7 +112,7 @@ public class ServerCommunicator {
             } else {
                 URL url = new URL(address);
                 certManager = new CustomCertManager(context, true, true);
-                certManager.appInForeground = true;
+                //certManager.appInForeground = true;
                 connection = getHttpUrlConnection(certManager, url);
                 if (authorization != null) {
                     connection.setRequestProperty("Authorization", authorization);
