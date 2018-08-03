@@ -87,6 +87,7 @@ public class ShowItemsFragment extends Fragment
     // because of activity recreation
     private int mTheme;
 
+    // Temporary sort order selection
     private int mSortOrder;
 
     private ListView mListView;
@@ -289,7 +290,6 @@ public class ShowItemsFragment extends Fragment
             if (mActionMode == null) {
                 if (mResumeDownloadNeeded) {
                     if (mCert4androidReady) {
-                        mSortOrder = Settings.getInt(getActivity(), getSortOrderPreference());
                         loadContent(true);
                     }
                 }
@@ -334,6 +334,7 @@ public class ShowItemsFragment extends Fragment
     }
 
     private void showSortOrderDialog() {
+        mSortOrder = Settings.getInt(getActivity(), getSortOrderPreference());
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.change_sort_order_title)
                 .setSingleChoiceItems(
