@@ -600,12 +600,21 @@ public class ShowItemsFragment extends Fragment
 
         @Override
         protected JSONObject doInBackground(Void... args) {
-            // Execute pending requests
-            HttpPostOfflineCache.executePending(getActivity());
+            try {
+                // Execute pending requests
+                HttpPostOfflineCache.executePending(getActivity());
 
-            // Download site
-            return ServerCommunicator.requestHttp(getActivity(), getRequestSite(),
-                    getRequestParameters());
+                // Download site
+                return ServerCommunicator.requestHttp(getActivity(), getRequestSite(),
+                        getRequestParameters());
+            } catch (Exception e) {
+                if (getActivity() == null) {
+                    Log.d(TAG, "Lost activity, discarding error during background execution", e);
+                } else {
+                    e.printStackTrace();
+                }
+                return null;
+            }
         }
 
         @Override
