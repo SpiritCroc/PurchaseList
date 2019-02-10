@@ -41,6 +41,9 @@ public abstract class HttpPostOfflineCache {
     private static final String PREF_CACHED_PREVIEWS_COUNT = "http_post_cache_preview_count";
     private static final String PREF_CACHED_PREVIEW_ = "http_post_cache_preview_";
     private static final String PREF_CACHED_REMOVE_PREVIEW = "http_post_cache_remove_preview";
+    private static final String PREF_CACHED_REMOVE_PREVIEW_COUNT =
+            "http_post_cache_remove_preview_count";
+    private static final String PREF_CACHED_REMOVE_PREVIEW_ = "http_post_cache_remove_preview_";
 
     // Don't instantiate
     private HttpPostOfflineCache() {}
@@ -85,7 +88,7 @@ public abstract class HttpPostOfflineCache {
 
 
     public static void addItemsToRemoveCache(Context context, String site, String params,
-                                             ArrayList<Long> removedIds) {
+                                             ArrayList<Item> removeItems) {
         if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
             // Don't modify demo list
             return;
@@ -98,11 +101,23 @@ public abstract class HttpPostOfflineCache {
         if (TextUtils.isEmpty(cache)) {
             cache = "";
         }
-        for (Long removedId: removedIds) {
-            cache += ((long) removedId) + ";";
+        // Handle ids separately / additionally to full entry for backwards compatibility
+        StringBuilder ids = new StringBuilder(cache);
+        int previewCount = sp.getInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, 0);
+        SharedPreferences.Editor e = sp.edit();
+        for (Item removeItem: removeItems) {
+            ids.append(removeItem.id);
+            ids.append(';');
+            removeItem.saveToCachePreferences(e, PREF_CACHED_REMOVE_PREVIEW_ + previewCount);
+            previewCount++;
         }
+
+        e.putInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, previewCount);
+
+        cache = ids.toString();
         if (DEBUG) Log.d(TAG, "Updated remove cache to " + cache);
-        sp.edit().putString(PREF_CACHED_REMOVE_PREVIEW, cache).apply();
+        e.putString(PREF_CACHED_REMOVE_PREVIEW, cache);
+        e.apply();
     }
 
     private static void clearInstructionsCache(Context context) {
@@ -129,6 +144,11 @@ public abstract class HttpPostOfflineCache {
             Item.deleteCachePreference(e, PREF_CACHED_PREVIEW_ + i);
         }
         e.putInt(PREF_CACHED_PREVIEWS_COUNT, 0);
+        previewCount = sp.getInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, 0);
+        for (int i = 0; i < previewCount; i++) {
+            Item.deleteCachePreference(e, PREF_CACHED_REMOVE_PREVIEW_ + i);
+        }
+        e.putInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, 0);
         e.apply();
     }
 
@@ -185,17 +205,31 @@ public abstract class HttpPostOfflineCache {
                 .getInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
     }
 
-    public static Item[] previewCache(Context context, Item[] onlineItems) {
+    static Item[] previewCache(Context context, Item[] onlineItems) {
+        return previewCache(context, onlineItems, PREF_CACHED_INSTRUCTIONS_COUNT,
+                PREF_CACHED_PREVIEWS_COUNT, PREF_CACHED_PREVIEW_, PREF_CACHED_REMOVE_PREVIEW);
+    }
+
+    static Item[] previewCompletedCache(Context context, Item[] onlineItems) {
+        return previewCache(context, onlineItems, PREF_CACHED_REMOVE_PREVIEW_COUNT, null,
+                PREF_CACHED_REMOVE_PREVIEW_, null);
+    }
+
+    private static Item[] previewCache(Context context, Item[] onlineItems, String countPref,
+                                      String newerCountPref, String cachePrefPrefix,
+                                      String excludeIdsPref) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         // For versions < 2, cachedPreviewsCount = cachedInstructionsCount
-        int previewCount = sp.getInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
-        previewCount = sp.getInt(PREF_CACHED_PREVIEWS_COUNT, previewCount);
+        int previewCount = sp.getInt(countPref, 0);
+        if (newerCountPref != null) {
+            previewCount = sp.getInt(newerCountPref, previewCount);
+        }
         if (DEBUG) Log.d(TAG, "previewCache: overlay " + previewCount + " items");
         ArrayList<Item> items = new ArrayList<>();
         items.addAll(Arrays.asList(onlineItems));
 
         for (int i = 0; i < previewCount; i++) {
-            Item overlay = Item.loadFromCachePreferences(sp, PREF_CACHED_PREVIEW_ + i);
+            Item overlay = Item.loadFromCachePreferences(sp, cachePrefPrefix + i);
             if (overlay == null) {
                 Log.w(TAG, "previewCache: preview " + i + " is broken; skipping");
                 continue;
@@ -208,21 +242,23 @@ public abstract class HttpPostOfflineCache {
             items.add(0, overlay);
         }
 
-        String removedPreviewsString = sp.getString(PREF_CACHED_REMOVE_PREVIEW, "");
-        if (!TextUtils.isEmpty(removedPreviewsString)) {
-            String[] removedPreviews = sp.getString(PREF_CACHED_REMOVE_PREVIEW, "").split(";");
-            if (DEBUG)
-                Log.d(TAG, "previewCache: remove " + removedPreviews.length + " items");
-            for (int i = 0; i < removedPreviews.length; i++) {
-                try {
-                    long id = Long.parseLong(removedPreviews[i]);
-                    Item removeMe = new Item();
-                    removeMe.id = id;
-                    if (DEBUG) Log.d(TAG, "previewCache: removing item with id " + id);
-                    items.remove(removeMe);
-                } catch (Exception e) {
-                    Log.e(TAG, "previewCache: removed items list contains invalid item "
-                            + removedPreviews[i] + ": " + e);
+        if (excludeIdsPref != null) {
+            String removedPreviewsString = sp.getString(excludeIdsPref, "");
+            if (!TextUtils.isEmpty(removedPreviewsString)) {
+                String[] removedPreviews = removedPreviewsString.split(";");
+                if (DEBUG)
+                    Log.d(TAG, "previewCache: remove " + removedPreviews.length + " items");
+                for (int i = 0; i < removedPreviews.length; i++) {
+                    try {
+                        long id = Long.parseLong(removedPreviews[i]);
+                        Item removeMe = new Item();
+                        removeMe.id = id;
+                        if (DEBUG) Log.d(TAG, "previewCache: removing item with id " + id);
+                        items.remove(removeMe);
+                    } catch (Exception e) {
+                        Log.e(TAG, "previewCache: removed items list contains invalid item "
+                                + removedPreviews[i] + ": " + e);
+                    }
                 }
             }
         }

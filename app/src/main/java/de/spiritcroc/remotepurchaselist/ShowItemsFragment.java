@@ -423,6 +423,13 @@ public class ShowItemsFragment extends Fragment
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else {
+            // Might make use of cache, so load either way
+            try {
+                loadContent(new JSONObject(Constants.JSON.EMPTY_FALLBACK));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -463,9 +470,9 @@ public class ShowItemsFragment extends Fragment
     }
 
     private void completeSelection() {
-        ArrayList<Long> preview = new ArrayList<>();
+        ArrayList<Item> preview = new ArrayList<>();
         for (Integer selectedPos: mSelectedItems) {
-            preview.add(mListAdapter.getItem(selectedPos).id);
+            preview.add(mListAdapter.getItem(selectedPos));
         }
 
         String params =
@@ -642,9 +649,10 @@ public class ShowItemsFragment extends Fragment
                             .edit()
                             .putString(getOfflinePreference(), result.toString())
                             .apply();
-                    // Everything is up to date
-                    HttpPostOfflineCache.clearPreviewCacheIfInstructionsEmpty(getActivity());
                 }
+
+                // Everything is up to date
+                HttpPostOfflineCache.clearPreviewCacheIfInstructionsEmpty(getActivity());
 
                 // Try to load with received json
                 if (loadContent(result)) {
@@ -695,8 +703,11 @@ public class ShowItemsFragment extends Fragment
                     items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
                 }
             }
+            // TODO rework cache logic in case other getOfflinePreference users get added
             if (getOfflinePreference() != null) {
                 items = HttpPostOfflineCache.previewCache(getActivity(), items);
+            } else {
+                items = HttpPostOfflineCache.previewCompletedCache(getActivity(), items);
             }
             // If items have changed, close action mode
             if (mListAdapter != null && mActionMode != null) {

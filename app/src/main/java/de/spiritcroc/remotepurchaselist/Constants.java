@@ -55,5 +55,7 @@ public final class Constants {
         public static final String DESC = " DESC";
 
         public static final String HIDE_OLDER_DUPLICATES = "hideOldDuplicates";
+
+        public static final String EMPTY_FALLBACK = "{\"items\":[],\"success\":1}";
     }
 }
