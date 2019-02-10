@@ -210,7 +210,7 @@ public abstract class Settings {
         if (s == null || !s.contains(ARRAY_SEP)) {
             return new String[0];
         }
-        return s.split(ARRAY_SEP);
+        return s.split(ARRAY_SEP, -1);
     }
 
     public static void putStringArray(Context context, String key, String[] values) {
