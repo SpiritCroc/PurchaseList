@@ -102,7 +102,7 @@ public class SettingsFragment extends BaseSettingsFragment
             updateServerUsername();
         } else if (Settings.SERVER_LOGIN_PASSWORD.equals(key)) {
             updateServerPassword();
-        } else if (Settings.THEME.equals(key)) {
+        } else if (Settings.THEME.equals(key) || Settings.BOSS_MODE.equals(key)) {
             getActivity().recreate();
         } else if (Settings.NAME_SUGGESTION_LIMIT.equals(key)) {
             updateNameSuggestionLimit();

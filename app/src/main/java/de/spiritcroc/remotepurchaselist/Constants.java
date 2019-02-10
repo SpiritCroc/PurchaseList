@@ -31,6 +31,7 @@ public final class Constants {
         public static final String INSERT_ITEM = "insert_item.php";
         public static final String UPDATE_ITEM = "update_item.php";
         public static final String COMPLETE_ITEMS = "complete_items.php";
+        public static final String DELETE_ITEM = "delete_item.php";
     }
     public static final class JSON {
         public static final String SUCCESS = "success";

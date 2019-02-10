@@ -114,6 +114,12 @@ public abstract class Settings {
     public static final String DEMO_LIST = "demo_list";
 
     /**
+     * Admin mode
+     */
+    public static final String BOSS_MODE = "boss_mode";
+
+
+    /**
      * Separator used for storing arrays in a single shared preference.
      */
     private static final String ARRAY_SEP = "䷀";
@@ -175,6 +181,7 @@ public abstract class Settings {
             case SIMULATE_SLOW_INTERNET:
             case DEMO_LIST:
             case HIDE_DUPLICATES_COMPLETED:
+            case BOSS_MODE:
                 return getSharedPreferences(context).getBoolean(key, false);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);

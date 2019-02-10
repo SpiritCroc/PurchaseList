@@ -43,6 +43,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected int getThemeRes() {
+        if (BossUtils.isBoss(this)) {
+            // VIP boss theme
+            return R.style.AppThemeBoss_NoActionBar;
+        }
         return Settings.getThemeNoActionBarRes(Settings.getInt(this, Settings.THEME));
     }
 }

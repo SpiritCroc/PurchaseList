@@ -105,13 +105,25 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
         View parent = super.onCreateView(inflater, parentContainer, savedInstanceState);
         parentContainer.addView(parent);
         // Custom click listener
-        ((ListView) view.findViewById(R.id.item_list))
-                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ListView list = view.findViewById(R.id.item_list);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         showReAddDialog(mListAdapter.getItem(i));
                     }
                 });
+        if (BossUtils.isBoss(getActivity())) {
+            // Extra functionality
+            list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i,
+                                               long l) {
+                    BossUtils.showBossCompletedItemDialog(getActivity(), mListAdapter.getItem(i),
+                            ShowCompletedItemsFragment.this);
+                    return true;
+                }
+            });
+        }
         return view;
     }
 

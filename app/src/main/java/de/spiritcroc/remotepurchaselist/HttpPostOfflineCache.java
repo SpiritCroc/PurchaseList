@@ -44,6 +44,7 @@ public abstract class HttpPostOfflineCache {
     private static final String PREF_CACHED_REMOVE_PREVIEW_COUNT =
             "http_post_cache_remove_preview_count";
     private static final String PREF_CACHED_REMOVE_PREVIEW_ = "http_post_cache_remove_preview_";
+    private static final String PREF_CACHED_DELETE_PREVIEW= "http_post_cache_deleted_preview";
 
     // Don't instantiate
     private HttpPostOfflineCache() {}
@@ -52,6 +53,7 @@ public abstract class HttpPostOfflineCache {
         clearInstructionsCache(context);
         clearItemCache(context);
         clearRemoveCache(context);
+        clearDeleteCache(context);
     }
 
     public static void clearPreviewCacheIfInstructionsEmpty(Context context) {
@@ -59,6 +61,7 @@ public abstract class HttpPostOfflineCache {
             // No instructions left -> empty preview cache
             clearItemCache(context);
             clearRemoveCache(context);
+            clearDeleteCache(context);
         }
     }
 
@@ -79,9 +82,17 @@ public abstract class HttpPostOfflineCache {
         // Add preview to cache
         if (cachePreview != null) {
             if (DEBUG) Log.d(TAG, "Adding preview " + cachePreview.toString());
-            int previewCount = sp.getInt(PREF_CACHED_PREVIEWS_COUNT, instructionCount);
-            cachePreview.saveToCachePreferences(e, PREF_CACHED_PREVIEW_ + previewCount);
-            e.putInt(PREF_CACHED_PREVIEWS_COUNT, ++previewCount);
+            if (cachePreview.completionDate <= 0) {
+                // Normal (open tasks) cache
+                int previewCount = sp.getInt(PREF_CACHED_PREVIEWS_COUNT, instructionCount);
+                cachePreview.saveToCachePreferences(e, PREF_CACHED_PREVIEW_ + previewCount);
+                e.putInt(PREF_CACHED_PREVIEWS_COUNT, ++previewCount);
+            } else {
+                // Completed tasks cache
+                int previewCount = sp.getInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, instructionCount);
+                cachePreview.saveToCachePreferences(e, PREF_CACHED_REMOVE_PREVIEW_ + previewCount);
+                e.putInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, ++previewCount);
+            }
         }
         e.putInt(PREF_CACHED_INSTRUCTIONS_COUNT, ++instructionCount).apply();
     }
@@ -117,6 +128,30 @@ public abstract class HttpPostOfflineCache {
         cache = ids.toString();
         if (DEBUG) Log.d(TAG, "Updated remove cache to " + cache);
         e.putString(PREF_CACHED_REMOVE_PREVIEW, cache);
+        e.apply();
+    }
+
+    public static void addItemToDeleteCache(Context context, String site, String params, long id) {
+        if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
+            // Don't modify demo list
+            return;
+        }
+        // Add instructions to cache
+        addItemToCache(context, site, params, null);
+        // Add preview to cache
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String cache = sp.getString(PREF_CACHED_DELETE_PREVIEW, "");
+        if (TextUtils.isEmpty(cache)) {
+            cache = "";
+        }
+        StringBuilder ids = new StringBuilder(cache);
+        SharedPreferences.Editor e = sp.edit();
+        ids.append(id);
+        ids.append(';');
+
+        cache = ids.toString();
+        if (DEBUG) Log.d(TAG, "Updated delete cache to " + cache);
+        e.putString(PREF_CACHED_DELETE_PREVIEW, cache);
         e.apply();
     }
 
@@ -156,6 +191,12 @@ public abstract class HttpPostOfflineCache {
         if (DEBUG) Log.d(TAG, "Clearing remove cache");
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(PREF_CACHED_REMOVE_PREVIEW).apply();
+    }
+
+    private static void clearDeleteCache(Context context) {
+        if (DEBUG) Log.d(TAG, "Clearing delete cache");
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .remove(PREF_CACHED_DELETE_PREVIEW).apply();
     }
 
     public static void executePending(Context context) {
@@ -212,7 +253,7 @@ public abstract class HttpPostOfflineCache {
 
     static Item[] previewCompletedCache(Context context, Item[] onlineItems) {
         return previewCache(context, onlineItems, PREF_CACHED_REMOVE_PREVIEW_COUNT, null,
-                PREF_CACHED_REMOVE_PREVIEW_, null);
+                PREF_CACHED_REMOVE_PREVIEW_, PREF_CACHED_DELETE_PREVIEW);
     }
 
     private static Item[] previewCache(Context context, Item[] onlineItems, String countPref,

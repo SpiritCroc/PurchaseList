@@ -80,10 +80,21 @@
             android:title="@string/pref_clear_trusted_certificates_title"
             android:summary="@string/pref_clear_trusted_certificates_summary" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_danger_zone">
+
         <PreferenceScreen
             android:title="@string/pref_debug_title"
             android:summary="@string/pref_debug_summary"
             android:fragment="de.spiritcroc.remotepurchaselist.settings.DebugSettingsFragment" />
+
+        <CheckBoxPreference
+            android:title="@string/pref_boss_mode_title"
+            android:summary="@string/pref_boss_mode_summary"
+            android:key="boss_mode"
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 

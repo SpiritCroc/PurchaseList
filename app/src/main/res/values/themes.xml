@@ -36,6 +36,13 @@
         <item name="backgroundColorListItemSelected">#33ffffff</item>
     </style>
 
+    <style name="AppThemeBoss" parent="AppThemeDark">
+        <!-- Being boss can hurt -->
+        <item name="colorPrimary">#e91e63</item>
+        <item name="colorPrimaryDark">#c2185b</item>
+        <item name="colorAccent">#f06292</item>
+    </style>
+
     <style name="AppThemeDarkToolbarForLightThemes" parent="AppThemeDark">
         <item name="popupMenuStyle">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
@@ -53,6 +60,14 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="toolbarStyle">@style/AppThemeDark</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="AppThemeBoss.NoActionBar">
+        <!-- Use toolbar instead of old school actionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="toolbarStyle">@style/AppThemeBoss</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
 </resources>

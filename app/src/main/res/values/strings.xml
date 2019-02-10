@@ -58,6 +58,11 @@
     <string name="sort_order_oldest_first">Oldest first</string>
     <string name="sort_order_alphabetically">Alphabetically</string>
 
+    <string name="boss_completed_dialog_title">Boss</string>
+    <string name="boss_completed_dialog_summary">Danger! What to do with \"%s\"?</string>
+    <string name="boss_completed_dialog_modify">Modify</string>
+    <string name="boss_completed_dialog_delete">Delete</string>
+
     <!--
     <string name="date_format_hour_minute">H:mm</string>
     <string name="date_format_day">dd. MM.</string>
@@ -101,6 +106,10 @@
     <string name="pref_debug_summary">Not for normal users</string>
     <string name="pref_simulate_slow_internet">Simulate slow internet</string>
     <string name="pref_demo_list">Demo list</string>
+
+    <string name="pref_category_danger_zone">Danger zone</string>
+    <string name="pref_boss_mode_title">Boss mode</string>
+    <string name="pref_boss_mode_summary">You don\'t want to use this</string>
 
     <!-- About -->
     <string name="title_about">About</string>
