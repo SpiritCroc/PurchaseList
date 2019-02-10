@@ -23,8 +23,9 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import at.bitfire.cert4android.CustomCertManager;
 import de.spiritcroc.remotepurchaselist.HttpPostOfflineCache;

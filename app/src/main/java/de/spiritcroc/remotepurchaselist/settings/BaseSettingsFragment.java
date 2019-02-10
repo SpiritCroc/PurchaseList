@@ -24,8 +24,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 public abstract class BaseSettingsFragment extends PreferenceFragment {
     private static final String LOG_TAG = BaseSettingsFragment.class.getSimpleName();

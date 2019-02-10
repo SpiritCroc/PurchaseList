@@ -20,9 +20,10 @@ package de.spiritcroc.remotepurchaselist;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+
+import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends BaseActivity {
 
