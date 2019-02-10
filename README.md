@@ -21,3 +21,10 @@ template) to configure the database access for the php-scripts.
 
 You can get the app on the [GitHub releases page](https://github.com/SpiritCroc/PurchaseList/releases)
 or on [Google Play](https://play.google.com/apps/testing/de.spiritcroc.remotepurchaselist).
+
+## Warning
+
+The server part has no kind of access restricition and is also prone to
+SQL injection attacts due to poor design, so make sure you protect it by
+some other mechanism (e.g. http access username and password which is
+supported by the app).
