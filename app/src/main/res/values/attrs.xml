@@ -19,4 +19,5 @@
     <attr name="backgroundColorListItemSelected" format="color" />
     <attr name="colorIndicatorNotSynced" format="color" />
     <attr name="colorListDivider" format="color" />
+    <attr name="colorListItemUsage" format="color" />
 </resources>

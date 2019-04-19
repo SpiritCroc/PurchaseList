@@ -46,6 +46,7 @@ public class EditItemFragment extends DialogFragment {
 
     private AutoCompleteTextView mEditName;
     private TextView mEditInfo;
+    private AutoCompleteTextView mEditUsage;
 
     public EditItemFragment setEditItem(Item editItem) {
         mInitItem = editItem;
@@ -78,9 +79,11 @@ public class EditItemFragment extends DialogFragment {
                 .inflate(R.layout.dialog_edit_item, null);
         mEditName = (AutoCompleteTextView) dialogView.findViewById(R.id.name_edit);
         mEditInfo = (TextView) dialogView.findViewById(R.id.info_edit);
+        mEditUsage = (AutoCompleteTextView) dialogView.findViewById(R.id.usage_edit);
         if (mEditItem != null) {
             mEditName.setText(mEditItem.name);
             mEditInfo.setText(mEditItem.info);
+            mEditUsage.setText(mEditItem.usage);
         }
         mEditName.setAdapter(new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1,
                 SuggestionsRetriever.getCachedSuggestions(activity)));
@@ -96,6 +99,8 @@ public class EditItemFragment extends DialogFragment {
                 }
             }
         });
+        mEditUsage.setAdapter(new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1,
+                UsageSuggestionsRetriever.getCachedSuggestions(activity)));
         AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                 .setTitle(mAddItem ? R.string.add_item_title : R.string.edit_item_title)
                 .setView(dialogView)
@@ -124,12 +129,14 @@ public class EditItemFragment extends DialogFragment {
                                 preview.id = mAddItem ? System.currentTimeMillis() : mEditItem.id;
                                 preview.name = name;
                                 preview.info = mEditInfo.getText().toString();
+                                preview.usage = mEditUsage.getText().toString();
                                 preview.creator = mAddItem ? whoami : mEditItem.creator;
                                 preview.updatedBy = whoami;
                                 preview.creationDate = System.currentTimeMillis();
                                 preview.completionDate = mAddItem ? -1 : mEditItem.completionDate;
                                 if (mInitItem == null || !preview.name.equals(mInitItem.name)
-                                        || !preview.info.equals(mInitItem.info)) {
+                                        || !preview.info.equals(mInitItem.info)
+                                        || !preview.usage.equals(mInitItem.usage)) {
                                     // Something has changed
                                     mListener.onEditItemResult(mAddItem, preview);
                                 } // else: no update needed, only close dialog
@@ -156,6 +163,9 @@ public class EditItemFragment extends DialogFragment {
         }
         if (mEditInfo != null) {
             mEditItem.info = mEditInfo.getText().toString();
+        }
+        if (mEditUsage != null) {
+            mEditItem.usage = mEditUsage.getText().toString();
         }
         outState.putBoolean(KEY_ADD_ITEM, mAddItem);
         outState.putParcelable(KEY_EDIT_ITEM, mEditItem);

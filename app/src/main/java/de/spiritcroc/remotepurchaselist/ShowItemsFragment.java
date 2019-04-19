@@ -298,6 +298,7 @@ public class ShowItemsFragment extends Fragment
             }
             // Update suggestions if necessary
             SuggestionsRetriever.updateSuggestions(getActivity().getApplicationContext());
+            UsageSuggestionsRetriever.updateSuggestions(getActivity().getApplicationContext());
         } // else: already up-to date or re-creation is coming
         updateEmptyListImage(mEmptyImage);
     }
@@ -457,6 +458,7 @@ public class ShowItemsFragment extends Fragment
         params = ServerCommunicator.addParameter(params, Constants.JSON.CREATION_DATE,
                 String.valueOf(item.creationDate));
         params = ServerCommunicator.addParameter(params, Constants.JSON.INFO, item.info);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.USAGE, item.usage);
         // ID also required for edit: server would create us one if we
         // didn't send it, but we need it for offline preview
         params = ServerCommunicator.addParameter(params, Constants.JSON.ID, String.valueOf(item.id));
@@ -706,6 +708,9 @@ public class ShowItemsFragment extends Fragment
                 if (jItem.has(Constants.JSON.INFO)) {
                     items[i].info = jItem.getString(Constants.JSON.INFO);
                 }
+                if (jItem.has(Constants.JSON.USAGE)) {
+                    items[i].usage = jItem.getString(Constants.JSON.USAGE);
+                }
                 items[i].creator = jItem.getString(Constants.JSON.CREATOR);
                 if (jItem.has(Constants.JSON.UPDATED_BY)) {
                     items[i].updatedBy = jItem.getString(Constants.JSON.UPDATED_BY);
@@ -769,6 +774,7 @@ public class ShowItemsFragment extends Fragment
                 holder.name = (TextView) convertView.findViewById(R.id.name);
                 holder.creator = (TextView) convertView.findViewById(R.id.creator);
                 holder.info = (TextView) convertView.findViewById(R.id.info);
+                holder.usage = (TextView) convertView.findViewById(R.id.usage);
                 holder.date = (TextView) convertView.findViewById(R.id.date);
                 holder.notSyncedIndicator = convertView.findViewById(R.id.indicator_not_synced);
 
@@ -790,6 +796,9 @@ public class ShowItemsFragment extends Fragment
             holder.info.setText(mItems[position].info);
             holder.info.setVisibility(TextUtils.isEmpty(mItems[position].info)
                     ? View.GONE : View.VISIBLE);
+            holder.usage.setText(mItems[position].usage);
+            holder.usage.setVisibility(TextUtils.isEmpty(mItems[position].usage)
+                    ? View.GONE : View.VISIBLE);
             if (mItems[position].completionDate > mItems[position].creationDate) {
                 holder.date.setText(getFormattedDate(mItems[position].completionDate));
             } else {
@@ -808,6 +817,7 @@ public class ShowItemsFragment extends Fragment
             TextView name;
             TextView creator;
             TextView info;
+            TextView usage;
             TextView date;
             View notSyncedIndicator;
         }

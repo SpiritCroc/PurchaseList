@@ -32,6 +32,7 @@ public final class Constants {
         public static final String UPDATE_ITEM = "update_item.php";
         public static final String COMPLETE_ITEMS = "complete_items.php";
         public static final String DELETE_ITEM = "delete_item.php";
+        public static final String GET_AVAILABLE_USAGES = "get_available_usages.php";
     }
     public static final class JSON {
         public static final String SUCCESS = "success";
@@ -41,6 +42,7 @@ public final class Constants {
         public static final String ID = "ID";
         public static final String NAME = "NAME";
         public static final String INFO = "INFO";
+        public static final String USAGE = "USAGE";
         public static final String CREATOR = "CREATOR";
         public static final String UPDATED_BY = "UPDATED_BY";
         public static final String CREATION_DATE = "CREATION_DATE";

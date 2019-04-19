@@ -45,6 +45,7 @@
     <string name="edit_item_title">Edit item</string>
     <string name="edit_item_name">Name</string>
     <string name="edit_item_info">Additional info</string>
+    <string name="edit_item_usage">Usage/recipe</string>
 
     <string name="re_add_item_title">Re-add item</string>
     <string name="re_add_item_message">Add \"%s\" to the current list again?</string>

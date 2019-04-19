@@ -26,6 +26,7 @@ public class Item implements Parcelable {
     public long id;
     public String name;
     public String info;
+    public String usage;
     public String creator;
     public String updatedBy;
     public long creationDate;
@@ -45,6 +46,7 @@ public class Item implements Parcelable {
         out.id = in.id;
         out.name = in.name;
         out.info = in.info;
+        out.usage = in.usage;
         out.creator = in.creator;
         out.updatedBy = in.updatedBy;
         out.creationDate = in.creationDate;
@@ -56,6 +58,7 @@ public class Item implements Parcelable {
     private static final String SP_ID = "_id";
     private static final String SP_NAME = "_name";
     private static final String SP_INFO = "_info";
+    private static final String SP_USAGE = "_usage";
     private static final String SP_CREATOR = "_creator";
     private static final String SP_UPDATED_BY = "_updated_by";
     private static final String SP_CREATION_DATE = "_creation_date";
@@ -65,6 +68,7 @@ public class Item implements Parcelable {
         editor.putLong(baseKey + SP_ID, id);
         editor.putString(baseKey + SP_NAME, name);
         editor.putString(baseKey + SP_INFO, info);
+        editor.putString(baseKey + SP_USAGE, usage);
         editor.putString(baseKey + SP_CREATOR, creator);
         editor.putString(baseKey + SP_UPDATED_BY, updatedBy);
         editor.putLong(baseKey + SP_CREATION_DATE, creationDate);
@@ -77,6 +81,7 @@ public class Item implements Parcelable {
             result.id = sp.getLong(baseKey + SP_ID, 0);
             result.name = sp.getString(baseKey + SP_NAME, null);
             result.info = sp.getString(baseKey + SP_INFO, null);
+            result.usage = sp.getString(baseKey + SP_USAGE, null);
             result.creator = sp.getString(baseKey + SP_CREATOR, null);
             result.updatedBy = sp.getString(baseKey + SP_UPDATED_BY, null);
             result.creationDate = sp.getLong(baseKey + SP_CREATION_DATE, 0);
@@ -90,6 +95,7 @@ public class Item implements Parcelable {
         editor.remove(baseKey + SP_ID)
                 .remove(baseKey + SP_NAME)
                 .remove(baseKey + SP_INFO)
+                .remove(baseKey + SP_USAGE)
                 .remove(baseKey + SP_CREATOR)
                 .remove(baseKey + SP_UPDATED_BY)
                 .remove(baseKey + SP_CREATION_DATE)
@@ -98,8 +104,8 @@ public class Item implements Parcelable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " (" + id + ";" + name + ";" + info + ";" + creator +
-                ";" + creationDate + ";" + completionDate + ")";
+        return getClass().getSimpleName() + " (" + id + ";" + name + ";" + info + ";" + usage +
+                ";" + creator + ";" + creationDate + ";" + completionDate + ")";
     }
 
     @Override
@@ -115,7 +121,7 @@ public class Item implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLongArray(new long[]{id, creationDate, completionDate});
-        out.writeStringArray(new String[]{name, info, creator, updatedBy});
+        out.writeStringArray(new String[]{name, info, usage, creator, updatedBy});
     }
 
     public static final Parcelable.Creator<Item> CREATOR
@@ -131,8 +137,9 @@ public class Item implements Parcelable {
             item.completionDate = longs[2];
             item.name = strings[0];
             item.info = strings[1];
-            item.creator = strings[2];
-            item.updatedBy = strings[3];
+            item.usage = strings[2];
+            item.creator = strings[3];
+            item.updatedBy = strings[4];
             return item;
         }
 

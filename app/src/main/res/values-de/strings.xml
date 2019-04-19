@@ -46,6 +46,7 @@
     <string name="edit_item_title">Eintrag bearbeiten</string>
     <string name="edit_item_name">Name</string>
     <string name="edit_item_info">Zusatzinfo</string>
+    <string name="edit_item_usage">Verwendung/Rezept</string>
 
     <string name="re_add_item_title">Erneut hinzufügen</string>
     <string name="re_add_item_message">\"%s\" wieder zur aktuellen Liste hinzufügen?</string>

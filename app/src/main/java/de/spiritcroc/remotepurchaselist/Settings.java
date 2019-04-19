@@ -123,6 +123,11 @@ public abstract class Settings {
      */
     public static final String USER_SECRET = "user_secret";
 
+    /**
+     * Usage suggestions
+     */
+    public static final String USAGE_SUGGESTIONS = "usage_suggestions";
+
 
     /**
      * Separator used for storing arrays in a single shared preference.
