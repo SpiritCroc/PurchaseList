@@ -31,7 +31,8 @@
         android:id="@+id/action_show_completed"
         android:title="@string/action_show_completed"
         android:orderInCategory="10"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_show_completed"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
