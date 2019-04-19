@@ -44,7 +44,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -92,12 +95,12 @@ public class ShowItemsFragment extends Fragment
     // Temporary sort order selection
     private int mSortOrder;
 
-    private ListView mListView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    protected ListView mListView;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
     private Snackbar mSnackbar;
-    private ImageView mEmptyImage;
+    protected ImageView mEmptyImage;
 
-    protected ItemArrayAdapter mListAdapter;
+    protected CustomListAdapterInterface<Item> mListAdapter;
 
     private ActionMode mActionMode;
     private ArrayList<Integer> mSelectedItems = new ArrayList<>();
@@ -322,6 +325,12 @@ public class ShowItemsFragment extends Fragment
                 startActivity(new Intent(getActivity(), MainActivity.class)
                         .putExtra(MainActivity.FRAGMENT_CLASS,
                                 ShowCompletedItemsFragment.class.getName()));
+                mResumeDownloadNeeded = true;
+                return true;
+            case R.id.action_show_by_usage:
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.FRAGMENT_CLASS,
+                                RecipeItemsFragment.class.getName()));
                 mResumeDownloadNeeded = true;
                 return true;
             case R.id.action_sort_order:
@@ -591,6 +600,10 @@ public class ShowItemsFragment extends Fragment
         return PREF_LAST_LIST;
     }
 
+    protected Item[] previewCache(Item[] items) {
+        return HttpPostOfflineCache.previewCache(getActivity(), items);
+    }
+
     protected String getSortOrderPreference() {
         return Settings.SORT_ORDER;
     }
@@ -720,12 +733,8 @@ public class ShowItemsFragment extends Fragment
                     items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
                 }
             }
-            // TODO rework cache logic in case other getOfflinePreference users get added
-            if (getOfflinePreference() != null) {
-                items = HttpPostOfflineCache.previewCache(getActivity(), items);
-            } else {
-                items = HttpPostOfflineCache.previewCompletedCache(getActivity(), items);
-            }
+            items = previewCache(items);
+
             // If items have changed, close action mode
             if (mListAdapter != null && mActionMode != null) {
                 if (items.length != mListAdapter.getCount()) {
@@ -741,8 +750,12 @@ public class ShowItemsFragment extends Fragment
                     }
                 }
             }
-            mListAdapter = new ItemArrayAdapter(getActivity(), R.layout.list_item, items);
-            mListView.setAdapter(mListAdapter);
+            mListAdapter = getListAdapter(items);
+            if (mListView instanceof ExpandableListView) {
+                ((ExpandableListView) mListView).setAdapter((ExpandableListAdapter) mListAdapter);
+            } else {
+                mListView.setAdapter((ListAdapter) mListAdapter);
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -750,7 +763,12 @@ public class ShowItemsFragment extends Fragment
         }
     }
 
-    protected class ItemArrayAdapter extends ArrayAdapter<Item> {
+    protected CustomListAdapterInterface<Item> getListAdapter(Item[] items) {
+        return new ItemArrayAdapter(getActivity(), R.layout.list_item, items);
+    }
+
+    protected class ItemArrayAdapter extends ArrayAdapter<Item>
+            implements CustomListAdapterInterface<Item> {
 
         private Item[] mItems;
         private int mItemBgColor;

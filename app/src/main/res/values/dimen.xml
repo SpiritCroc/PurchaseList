@@ -33,4 +33,6 @@
     <dimen name="dialog_top_padding">4dp</dimen>
 
     <dimen name="list_divider_height">1dp</dimen>
+
+    <dimen name="checkbox_padding">16dp</dimen>
 </resources>

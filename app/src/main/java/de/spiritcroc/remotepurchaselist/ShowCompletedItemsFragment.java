@@ -93,6 +93,11 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     }
 
     @Override
+    protected Item[] previewCache(Item[] items) {
+        return HttpPostOfflineCache.previewCompletedCache(getActivity(), items);
+    }
+
+    @Override
     protected String getSortOrderPreference() {
         return Settings.SORT_ORDER_COMPLETED;
     }
@@ -131,6 +136,7 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.action_show_completed).setVisible(false);
+        menu.findItem(R.id.action_show_by_usage).setVisible(false);
         inflater.inflate(R.menu.fragment_show_completed_items, menu);
         mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         mSearchView.setOnQueryTextListener(this);

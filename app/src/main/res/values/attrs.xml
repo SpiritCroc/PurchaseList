@@ -20,4 +20,7 @@
     <attr name="colorIndicatorNotSynced" format="color" />
     <attr name="colorListDivider" format="color" />
     <attr name="colorListItemUsage" format="color" />
+    <attr name="colorRecipeListItem" format="color" />
+    <attr name="colorRecipeListItemActive" format="color" />
+    <attr name="colorRecipeListGroup" format="color" />
 </resources>

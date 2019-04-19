@@ -25,6 +25,9 @@
         <item name="colorListItemUsage">?android:attr/textColorHint</item>
         <item name="backgroundColorListItem">@android:color/transparent</item>
         <item name="backgroundColorListItemSelected">#1e000000</item>
+        <item name="colorRecipeListItem">?android:attr/textColorSecondary</item>
+        <item name="colorRecipeListItemActive">#b3ffa000</item>
+        <item name="colorRecipeListGroup">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="AppThemeDark" parent="Theme.AppCompat">
@@ -36,6 +39,9 @@
         <item name="colorListItemUsage">?android:attr/textColorHint</item>
         <item name="backgroundColorListItem">@android:color/transparent</item>
         <item name="backgroundColorListItemSelected">#33ffffff</item>
+        <item name="colorRecipeListItem">?android:attr/textColorSecondary</item>
+        <item name="colorRecipeListItemActive">#b3ffc107</item>
+        <item name="colorRecipeListGroup">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="AppThemeBoss" parent="AppThemeDark">

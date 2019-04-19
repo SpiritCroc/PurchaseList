@@ -22,6 +22,7 @@
     <string name="action_complete">Complete</string>
     <string name="action_select_all">Select all</string>
     <string name="action_show_completed">Show completed</string>
+    <string name="action_show_by_usage">Recipes</string>
     <string name="action_search">Search</string>
     <string name="action_sort_order">Order by</string>
     <string name="action_hide_duplicates">Hide duplicates</string>
@@ -34,6 +35,7 @@
     <string name="app_title_online">Updated: %s</string>
     <string name="app_title_fail">Update failed</string>
     <string name="app_title_completed">Completed</string>
+    <string name="app_title_by_usage">Recipes</string>
 
     <string name="list_entry_creator">%s</string>
     <string name="list_entry_creator_updated_by">%1$s, %2$s</string>
@@ -49,6 +51,12 @@
 
     <string name="re_add_item_title">Re-add item</string>
     <string name="re_add_item_message">Add \"%s\" to the current list again?</string>
+
+    <string name="re_add_items_title">Add items</string>
+    <plurals name="re_add_items_message">
+        <item quantity="one">Add %d item to the current list?</item>
+        <item quantity="other">Add %d items to the current list?</item>
+    </plurals>
 
     <string name="error_empty">Must not be empty</string>
 

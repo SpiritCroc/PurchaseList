@@ -27,6 +27,7 @@ public final class Constants {
         public static final String GET_LIST = "get_list.php";
         public static final String GET_COMPLETED_LIST = "get_completed_list.php";
         public static final String GET_FULL_LIST = "get_full_list.php";
+        public static final String GET_LIST_BY_USAGE = "get_list_by_usage.php";
         public static final String GET_SUGGESTIONS = "get_suggestions.php";
         public static final String INSERT_ITEM = "insert_item.php";
         public static final String UPDATE_ITEM = "update_item.php";

@@ -22,6 +22,12 @@
         android:icon="@drawable/ic_sort"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_show_by_usage"
+        android:title="@string/action_show_by_usage"
+        android:orderInCategory="8"
+        android:icon="@drawable/ic_add_by_usage"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_show_completed"
         android:title="@string/action_show_completed"
         android:orderInCategory="10"

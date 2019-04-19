@@ -22,6 +22,7 @@
     <string name="action_complete">Erledigt</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="action_show_completed">Erledigte anzeigen</string>
+    <string name="action_show_by_usage">Rezepte</string>
     <string name="action_search">Suche</string>
     <string name="action_sort_order">Sortierreihenfolge</string>
     <string name="action_hide_duplicates">Duplikate ausblenden</string>
@@ -35,6 +36,7 @@
     <string name="app_title_online">Aktuell: %s</string>
     <string name="app_title_fail">Update fehlgeschlagen</string>
     <string name="app_title_completed">Erledigte</string>
+    <string name="app_title_by_usage">Rezepte</string>
 
     <string name="list_entry_creator">%s</string>
     <string name="list_entry_creator_updated_by">%1$s, %2$s</string>
@@ -50,6 +52,12 @@
 
     <string name="re_add_item_title">Erneut hinzufügen</string>
     <string name="re_add_item_message">\"%s\" wieder zur aktuellen Liste hinzufügen?</string>
+
+    <string name="re_add_items_title">Erneut hinzufügen</string>
+    <plurals name="re_add_items_message">
+        <item quantity="one">%d Eintrag zur aktuellen Liste hinzufügen?</item>
+        <item quantity="other">%d Einträge zur aktuellen Liste hinzufügen?</item>
+    </plurals>
 
     <string name="error_empty">Darf nicht leer sein</string>
 
