@@ -55,8 +55,9 @@ public class SuggestionsRetriever {
         @Override
         protected JSONObject doInBackground(Void... args) {
             int maxSuggestionCount = Settings.getInt(mContext, Settings.NAME_SUGGESTION_LIMIT);
-            String requestParameters = ServerCommunicator.addParameter(null, Constants.JSON.LIMIT,
-                    maxSuggestionCount + "");
+            String requestParameters = ServerCommunicator.initializeParameter(mContext);
+            requestParameters = ServerCommunicator.addParameter(requestParameters,
+                    Constants.JSON.LIMIT, maxSuggestionCount + "");
             try {
                 return ServerCommunicator.requestHttp(mContext, Constants.SITE.GET_SUGGESTIONS,
                         requestParameters);

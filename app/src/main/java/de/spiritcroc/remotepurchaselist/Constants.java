@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -55,6 +55,7 @@ public final class Constants {
         public static final String ASC = " ASC";
         public static final String DESC = " DESC";
 
+        public static final String USER_SECRET = "ROLESECRET";
         public static final String HIDE_OLDER_DUPLICATES = "hideOldDuplicates";
 
         public static final String EMPTY_FALLBACK = "{\"items\":[],\"success\":1}";

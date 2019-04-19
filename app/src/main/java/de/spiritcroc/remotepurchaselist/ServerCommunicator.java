@@ -183,6 +183,13 @@ public class ServerCommunicator {
 
     }
 
+    public static String initializeParameter(Context context) {
+        String params = null;
+        params = addParameter(params, Constants.JSON.USER_SECRET,
+                Settings.getString(context, Settings.USER_SECRET));
+        return params;
+    }
+
     public static String addParameter(String currentParameters, String newParameter,
                                       String newParameterValue) {
         try {

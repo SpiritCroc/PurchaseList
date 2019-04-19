@@ -85,6 +85,11 @@
     <PreferenceCategory
         android:title="@string/pref_category_danger_zone">
 
+        <EditTextPreference
+            android:key="user_secret"
+            android:title="@string/pref_user_secret_title"
+            android:summary="@string/pref_user_secret_summary" />
+
         <PreferenceScreen
             android:title="@string/pref_debug_title"
             android:summary="@string/pref_debug_summary"

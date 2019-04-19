@@ -118,6 +118,11 @@ public abstract class Settings {
      */
     public static final String BOSS_MODE = "boss_mode";
 
+    /**
+     * User secret
+     */
+    public static final String USER_SECRET = "user_secret";
+
 
     /**
      * Separator used for storing arrays in a single shared preference.
@@ -201,6 +206,7 @@ public abstract class Settings {
             case SERVER_LOGIN_PASSWORD:
             case LIST_ITEM_CREATION_DATE_FORMAT:
             case UPDATE_TIME_FORMAT:
+            case USER_SECRET:
                 return getSharedPreferences(context).getString(key, "");
             default:
                 Log.e(TAG, "getString: unknown key " + key);

@@ -49,7 +49,8 @@ public class BossUtils {
     }
 
     private static void deleteItem(Context context, Item item) {
-        String params = ServerCommunicator.addParameter(null, Constants.JSON.ID, "" + item.id);
+        String params = ServerCommunicator.initializeParameter(context);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.ID, "" + item.id);
         params = ServerCommunicator.addParameter(params,
                 Constants.JSON.CREATOR, Settings.getString(context, Settings.WHOAMI));
         HttpPostOfflineCache.addItemToDeleteCache(context, Constants.SITE.DELETE_ITEM,
