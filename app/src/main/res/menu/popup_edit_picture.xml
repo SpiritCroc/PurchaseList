@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (C) 2017-2019 SpiritCroc
+    Copyright (C) 2019 SpiritCroc
     Email: spiritcroc@gmail.com
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,14 +14,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<resources>
-    <attr name="backgroundColorListItem" format="color" />
-    <attr name="backgroundColorListItemSelected" format="color" />
-    <attr name="colorIndicatorNotSynced" format="color" />
-    <attr name="colorIndicatorPicture" format="color" />
-    <attr name="colorListDivider" format="color" />
-    <attr name="colorListItemUsage" format="color" />
-    <attr name="colorRecipeListItem" format="color" />
-    <attr name="colorRecipeListItemActive" format="color" />
-    <attr name="colorRecipeListGroup" format="color" />
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_picture_local"
+        android:title="@string/action_picture_local" />
+    <item
+        android:id="@+id/action_picture_url"
+        android:title="@string/action_picture_url" />
+    <item
+        android:id="@+id/action_picture_remove"
+        android:title="@string/action_picture_remove" />
+    <item
+        android:id="@+id/action_picture_reset"
+        android:title="@string/action_picture_reset" />
+</menu>

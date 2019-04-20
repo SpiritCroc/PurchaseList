@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,8 @@ public class BaseActivity extends AppCompatActivity {
         setTheme(mThemeRes);
 
         super.onCreate(savedInstanceState);
+
+        ServerCommunicator.setupHttps(BaseActivity.this, null);
     }
 
     @Override

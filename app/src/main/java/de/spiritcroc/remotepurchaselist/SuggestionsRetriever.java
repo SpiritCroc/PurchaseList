@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 SpiritCroc
+ * Copyright (C) 2018-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -97,6 +97,7 @@ public class SuggestionsRetriever {
             int size = jItems.length();
             String[] names = new String[size];
             String[] infos = new String[size];
+            String[] pictureUrls = new String[size];
             for (int i = 0; i < size; i++) {
                 JSONObject jItem = jItems.getJSONObject(i);
                 names[i] = jItem.getString(Constants.JSON.NAME);
@@ -105,11 +106,17 @@ public class SuggestionsRetriever {
                 } else {
                     infos[i] = "";
                 }
+                if (jItem.has(Constants.JSON.PICTURE_URL)) {
+                    pictureUrls[i] = jItem.getString(Constants.JSON.PICTURE_URL);
+                } else {
+                    pictureUrls[i] = "";
+                }
             }
             sPrefLock.lock();
             try {
                 Settings.putStringArray(context, Settings.NAME_SUGGESTIONS, names);
                 Settings.putStringArray(context, Settings.INFO_SUGGESTIONS, infos);
+                Settings.putStringArray(context, Settings.PICTURE_URL_SUGGESTIONS, pictureUrls);
             } finally {
                 sPrefLock.unlock();
             }
@@ -123,32 +130,48 @@ public class SuggestionsRetriever {
         }
     }
 
-    public static String getCorrespondingInfoSuggestion(Context context, String name) {
+    /**
+     * @return
+     * An item containing some suggestion auto-completion information (info, pictureUrl).
+     * Do not use for other purposes than auto-completion, since item has no complete information!
+     */
+    public static Item getSuggestionItemInfosByName(Context context, String name) {
+        Item item = new Item();
+        item.name = name;
         if (TextUtils.isEmpty(name)) {
-            return "";
+            return item;
         }
         if (sPrefLock.tryLock()) {
             String[] names;
             String[] infos;
+            String[] pictureUrls;
             try {
                 names = getCachedSuggestions(context);
                 infos = Settings.getStringArray(context, Settings.INFO_SUGGESTIONS);
+                pictureUrls = Settings.getStringArray(context, Settings.PICTURE_URL_SUGGESTIONS);
             } finally {
                 sPrefLock.unlock();
             }
             if (names.length != infos.length) {
                 Log.e(TAG, "Inconsistent suggestions: names " + names.length + ", infos: " +
                         infos.length);
-                return "";
+                return item;
+            }
+            if (names.length != pictureUrls.length) {
+                Log.e(TAG, "Inconsistent suggestions: names " + names.length + ", pictureUrls: " +
+                        pictureUrls.length);
+                return item;
             }
             for (int i = 0; i < names.length; i++) {
                 if (name.equals(names[i])) {
-                    return infos[i];
+                    item.info = infos[i];
+                    item.pictureUrl = pictureUrls[i];
+                    return item;
                 }
             }
         } else {
             Log.d(TAG, "skip returning corresponding info suggestion to avoid lock");
         }
-        return "";
+        return item;
     }
 }

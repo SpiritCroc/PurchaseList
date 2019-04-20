@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -54,6 +54,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -63,13 +64,16 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import at.bitfire.cert4android.CustomCertService;
 import de.spiritcroc.remotepurchaselist.settings.AboutActivity;
 import de.spiritcroc.remotepurchaselist.settings.SettingsActivity;
 
 public class ShowItemsFragment extends Fragment
-        implements EditItemFragment.OnEditItemResultListener {
+        implements EditItemFragment.OnEditItemResultListener,
+                ShowItemFragment.ItemInteractionListener,
+                ServerCommunicator.OnHttpsSetupFinishListener {
 
     private static final String TAG = ShowItemsFragment.class.getSimpleName();
 
@@ -79,6 +83,9 @@ public class ShowItemsFragment extends Fragment
 
     private static final String FRAGMENT_TAG_EDIT_ITEM_DIALOG = ShowItemsFragment.class.getName() +
             ".edit_item_dialog";
+
+    private static final String FRAGMENT_TAG_SHOW_ITEM_DIALOG = ShowItemsFragment.class.getName() +
+            ".show_item_dialog";
 
     private boolean mDownloading = false;
     private boolean mResumeDownloadNeeded = true;
@@ -91,6 +98,8 @@ public class ShowItemsFragment extends Fragment
     // Remember theme, so we re-download on theme change, leading to crash
     // because of activity recreation
     private int mTheme;
+
+    private boolean mPicturePreview = false;
 
     // Temporary sort order selection
     private int mSortOrder;
@@ -160,11 +169,18 @@ public class ShowItemsFragment extends Fragment
         setHasOptionsMenu(true);
 
         mTheme = Settings.getInt(getActivity(), Settings.THEME);
+        mPicturePreview = Settings.getBoolean(getActivity(), Settings.OVERVIEW_PICTURE_PREVIEW);
 
         EditItemFragment editItemFragment = (EditItemFragment)
                 getFragmentManager().findFragmentByTag(FRAGMENT_TAG_EDIT_ITEM_DIALOG);
         if (editItemFragment != null) {
             editItemFragment.setOnEditResultListener(this);
+        }
+
+        ShowItemFragment showItemFragment = (ShowItemFragment)
+                getFragmentManager().findFragmentByTag(FRAGMENT_TAG_SHOW_ITEM_DIALOG);
+        if (showItemFragment != null) {
+            showItemFragment.setItemInteractionListener(this);
         }
 
         getActivity().getApplicationContext()
@@ -195,7 +211,14 @@ public class ShowItemsFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_show_items, container, false);
 
         mListView = (ListView) view.findViewById(R.id.item_list);
-        if (!isReadOnly()) {
+        if (isReadOnly()) {
+            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    showItem(mListAdapter.getItem(i));
+                }
+            });
+        } else {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -204,7 +227,7 @@ public class ShowItemsFragment extends Fragment
                         return;
                     }
                     if (mSelectedItems.isEmpty()) {
-                        editItem(mListAdapter.getItem(i));
+                        showItem(mListAdapter.getItem(i));
                     } else {
                         selectItem(i);
                     }
@@ -303,6 +326,14 @@ public class ShowItemsFragment extends Fragment
             SuggestionsRetriever.updateSuggestions(getActivity().getApplicationContext());
             UsageSuggestionsRetriever.updateSuggestions(getActivity().getApplicationContext());
         } // else: already up-to date or re-creation is coming
+        boolean picturePreview =
+                Settings.getBoolean(getActivity(), Settings.OVERVIEW_PICTURE_PREVIEW);
+        if (picturePreview != mPicturePreview) {
+            mPicturePreview = picturePreview;
+            if (mListAdapter != null) {
+                mListAdapter.notifyDataSetChanged();
+            }
+        }
         updateEmptyListImage(mEmptyImage);
     }
 
@@ -448,18 +479,38 @@ public class ShowItemsFragment extends Fragment
                 .show(getFragmentManager(), FRAGMENT_TAG_EDIT_ITEM_DIALOG);
     }
 
-    private void editItem(final Item item) {
+    public void editItem(final Item item) {
         new EditItemFragment().setEditItem(item)
                 .setOnEditResultListener(this)
                 .show(getFragmentManager(), FRAGMENT_TAG_EDIT_ITEM_DIALOG);
     }
 
-    @Override
-    public void onEditItemResult(boolean add, Item item) {
-        editItem(add, item, true);
+    private void showItem(final Item item) {
+        if (isReadOnly() || item.hasPicture()) {
+            new ShowItemFragment().setItem(item)
+                    .setItemInteractionListener(this)
+                    .show(getFragmentManager(), FRAGMENT_TAG_SHOW_ITEM_DIALOG);
+        } else {
+            editItem(item);
+        }
     }
 
-    protected void editItem(boolean add, Item item, boolean reloadList) {
+    @Override
+    public void onEditItemResult(boolean add, Item item, boolean localPictureUpload,
+                                 boolean skipUrlUpdate) {
+        // Reload list only after all cache updates are done.
+        // edit first so add works too.
+        editItem(add, item, false, skipUrlUpdate);
+        if (localPictureUpload) {
+            uploadLocalPicture(item);
+        }
+        // Offline preview
+        loadContent(false);
+        // Push update
+        loadContent(true);
+    }
+
+    protected void editItem(boolean add, Item item, boolean reloadList, boolean skipUrlUpdate) {
         String params = ServerCommunicator.initializeParameter(getActivity());
         params = ServerCommunicator.addParameter(params, Constants.JSON.NAME, item.name);
         params = ServerCommunicator.addParameter(params, Constants.JSON.CREATOR, item.creator);
@@ -468,9 +519,14 @@ public class ShowItemsFragment extends Fragment
                 String.valueOf(item.creationDate));
         params = ServerCommunicator.addParameter(params, Constants.JSON.INFO, item.info);
         params = ServerCommunicator.addParameter(params, Constants.JSON.USAGE, item.usage);
+        if (!skipUrlUpdate) {
+            params = ServerCommunicator.addParameter(params, Constants.JSON.PICTURE_URL,
+                    item.pictureUrl);
+        } // else: use whatever is already there (ensure not overwriting cached picture uploads)
         // ID also required for edit: server would create us one if we
         // didn't send it, but we need it for offline preview
-        params = ServerCommunicator.addParameter(params, Constants.JSON.ID, String.valueOf(item.id));
+        params = ServerCommunicator.addParameter(params, Constants.JSON.ID,
+                String.valueOf(item.id));
         HttpPostOfflineCache.addItemToCache(getActivity(), add
                 ? Constants.SITE.INSERT_ITEM : Constants.SITE.UPDATE_ITEM, params, item);
         if (reloadList) {
@@ -481,18 +537,45 @@ public class ShowItemsFragment extends Fragment
         }
     }
 
+    protected void uploadLocalPicture(Item item) {
+        if (TextUtils.isEmpty(item.localPictureUrl)) {
+            Log.e(TAG, "uploadLocalPicture on empty picture URL");
+            return;
+        }
+        List<HttpPostOfflineCache.MultiPartRequestParameter> params =
+                ServerCommunicator.initializeMultipartParameter(getActivity());
+        params = ServerCommunicator.addParameter(params, Constants.JSON.ID, item.id);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.UPDATED_BY, item.updatedBy);
+        params = ServerCommunicator.addParameter(params, Constants.JSON.PICTURE,
+                LocalPictureHandler.fileFromURI(item.localPictureUrl));
+        // No preview: already done in editItem
+        HttpPostOfflineCache.addItemToCache(getActivity(), Constants.SITE.PICTURE_ADD, params,
+                null);
+    }
+
+    @Override
+    public void completeItem(Item item) {
+        ArrayList<Item> preview = new ArrayList<>();
+        preview.add(item);
+        completeItems(preview);
+    }
+
     private void completeSelection() {
         ArrayList<Item> preview = new ArrayList<>();
-        for (Integer selectedPos: mSelectedItems) {
+        for (Integer selectedPos : mSelectedItems) {
             preview.add(mListAdapter.getItem(selectedPos));
         }
+        completeItems(preview);
+    }
 
+    private void completeItems(List<Item> items) {
         String params = ServerCommunicator.initializeParameter(getActivity());
-        params = ServerCommunicator.addParameter(params, Constants.JSON.SELECTION, getSelection());
+        params = ServerCommunicator.addParameter(params, Constants.JSON.SELECTION,
+                getSelection(items));
         params = ServerCommunicator.addParameter(params, Constants.JSON.UPDATED_BY,
                 Settings.getString(getActivity(), Settings.WHOAMI));
         HttpPostOfflineCache.addItemsToRemoveCache(getActivity(), Constants.SITE.COMPLETE_ITEMS,
-                params, preview);
+                params, items);
         // Offline preview
         loadContent(false);
         // Upload stuff
@@ -528,14 +611,13 @@ public class ShowItemsFragment extends Fragment
                 mSelectedItems.size(), mSelectedItems.size()));
     }
 
-    private String getSelection() {
-        if (mSelectedItems.isEmpty()) {
+    private String getSelection(List<Item> items) {
+        if (items.isEmpty()) {
             return null;
         }
-        String result = Constants.JSON.ID + " = " + mListAdapter.getItem(mSelectedItems.get(0)).id;
-        for (int i = 1; i < mSelectedItems.size(); i++) {
-            result += " OR " + Constants.JSON.ID + " = " +
-                    mListAdapter.getItem(mSelectedItems.get(i)).id;
+        String result = Constants.JSON.ID + " = " + items.get(0).id;
+        for (int i = 1; i < items.size(); i++) {
+            result += " OR " + Constants.JSON.ID + " = " + items.get(i).id;
         }
         return result;
     }
@@ -732,6 +814,9 @@ public class ShowItemsFragment extends Fragment
                 if (jItem.has(Constants.JSON.COMPLETION_DATE)) {
                     items[i].completionDate = jItem.getLong(Constants.JSON.COMPLETION_DATE);
                 }
+                if (jItem.has(Constants.JSON.PICTURE_URL)) {
+                    items[i].pictureUrl = jItem.getString(Constants.JSON.PICTURE_URL);
+                }
             }
             items = previewCache(items);
 
@@ -795,6 +880,8 @@ public class ShowItemsFragment extends Fragment
                 holder.usage = (TextView) convertView.findViewById(R.id.usage);
                 holder.date = (TextView) convertView.findViewById(R.id.date);
                 holder.notSyncedIndicator = convertView.findViewById(R.id.indicator_not_synced);
+                holder.pictureIndicator = convertView.findViewById(R.id.indicator_picture);
+                holder.picture = (ImageView) convertView.findViewById(R.id.picture);
 
                 convertView.setTag(holder);
             } else {
@@ -818,12 +905,32 @@ public class ShowItemsFragment extends Fragment
             holder.usage.setVisibility(TextUtils.isEmpty(mItems[position].usage)
                     ? View.GONE : View.VISIBLE);
             if (mItems[position].completionDate > mItems[position].creationDate) {
-                holder.date.setText(getFormattedDate(mItems[position].completionDate));
+                holder.date.setText(getFormattedDate(getActivity(),
+                        mItems[position].completionDate));
             } else {
-                holder.date.setText(getFormattedDate(mItems[position].creationDate));
+                holder.date.setText(getFormattedDate(getActivity(), mItems[position].creationDate));
             }
             holder.notSyncedIndicator.setVisibility(mItems[position].isCached()
                     ? View.VISIBLE : View.GONE);
+            if (Settings.getBoolean(getActivity(), Settings.OVERVIEW_PICTURE_PREVIEW)) {
+                holder.pictureIndicator.setVisibility(View.GONE);
+                if (mItems[position].hasPicture()) {
+                    holder.picture.setVisibility(View.VISIBLE);
+                    if (ServerCommunicator.setupHttps(getActivity(), ShowItemsFragment.this)) {
+                        Glide.with(holder.picture)
+                                .load(mItems[position].getPictureUrl(getActivity()))
+                                .error(R.drawable.ic_broken_picture)
+                                .circleCrop()
+                                .into(holder.picture);
+                    }
+                } else {
+                    holder.picture.setVisibility(View.GONE);
+                }
+            } else {
+                holder.picture.setVisibility(View.GONE);
+                holder.pictureIndicator.setVisibility(mItems[position].hasPicture()
+                        ? View.VISIBLE : View.GONE);
+            }
             convertView.setBackgroundColor(mSelectedItems.contains(position)
                     ? mItemSelectedBgColor
                     : mItemBgColor);
@@ -838,6 +945,8 @@ public class ShowItemsFragment extends Fragment
             TextView usage;
             TextView date;
             View notSyncedIndicator;
+            View pictureIndicator;
+            ImageView picture;
         }
 
         private void loadResources() {
@@ -851,7 +960,7 @@ public class ShowItemsFragment extends Fragment
         }
     }
 
-    private String getFormattedDate(long time) {
+    public static String getFormattedDate(Context context, long time) {
         /*
         Calendar today = Calendar.getInstance();
         Calendar formatted = Calendar.getInstance();
@@ -870,7 +979,7 @@ public class ShowItemsFragment extends Fragment
         return new SimpleDateFormat(format).format(time);
         */
         String creationDateFormatPattern =
-                Settings.getString(getActivity(), Settings.LIST_ITEM_CREATION_DATE_FORMAT);
+                Settings.getString(context, Settings.LIST_ITEM_CREATION_DATE_FORMAT);
         DateFormat creationDateFormat;
         if (TextUtils.isEmpty(creationDateFormatPattern)) {
             creationDateFormat = SimpleDateFormat.getDateInstance();
@@ -878,5 +987,33 @@ public class ShowItemsFragment extends Fragment
             creationDateFormat = new SimpleDateFormat(creationDateFormatPattern);
         }
         return creationDateFormat.format(time);
+    }
+
+    @Override
+    public void onHttpsReady() {
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void reAddItem(final Item oldItem) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.re_add_item_title)
+                .setMessage(getString(R.string.re_add_item_message, oldItem.name))
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                })
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Item addItem = oldItem.copy();
+                        addItem.id = System.currentTimeMillis();
+                        addItem.creationDate = System.currentTimeMillis();
+                        addItem.creator = Settings.getString(getActivity(), Settings.WHOAMI);
+                        addItem.completionDate = -1;
+                        ShowItemsFragment.this.editItem(true, addItem, false, false);
+                    }
+                })
+                .show();
     }
 }

@@ -26,6 +26,10 @@
     <string name="action_search">Search</string>
     <string name="action_sort_order">Order by</string>
     <string name="action_hide_duplicates">Hide duplicates</string>
+    <string name="action_picture_local">Select local picture</string>
+    <string name="action_picture_url">Enter picture address</string>
+    <string name="action_picture_remove">Remove picture</string>
+    <string name="action_picture_reset">Reset picture</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="other">%d selected</item>
@@ -42,13 +46,21 @@
 
     <string name="toast_prefs_required">Please enter server url and username</string>
     <string name="toast_server_error">Server communication error, please check your setup</string>
+    <string name="toast_no_resolver_for_action">No appropriate application found</string>
 
     <string name="add_item_title">Add item</string>
     <string name="edit_item_title">Edit item</string>
     <string name="edit_item_name">Name</string>
     <string name="edit_item_info">Additional info</string>
     <string name="edit_item_usage">Usage/recipe</string>
+    <string name="edit_item_picture_url">Picture URL</string>
+    <string name="edit_item_picture_add">Add picture</string>
+    <string name="import_local_picture_dialog_title">Importing picture</string>
+    <string name="import_local_picture_dialog_message">Please wait while file is being processed</string>
 
+    <string name="show_item_modify">Modify</string>
+
+    <string name="show_item_re_add">Re-add</string>
     <string name="re_add_item_title">Re-add item</string>
     <string name="re_add_item_message">Add \"%s\" to the current list again?</string>
 
@@ -69,7 +81,7 @@
 
     <string name="boss_completed_dialog_title">Boss</string>
     <string name="boss_completed_dialog_summary">Danger! What to do with \"%s\"?</string>
-    <string name="boss_completed_dialog_modify">Modify</string>
+    <string name="boss_completed_dialog_modify">@string/show_item_modify</string>
     <string name="boss_completed_dialog_delete">Delete</string>
 
     <!--
@@ -107,6 +119,8 @@
     <string name="pref_dino_summary_off">" "</string>
     <string name="pref_user_secret_title">Secret</string>
     <string name="pref_user_secret_summary">""</string>
+    <string name="pref_overview_picture_preview_title">Picture preview</string>
+    <string name="pref_overview_picture_preview_summary">Show pictures in list entries</string>
 
     <string name="pref_date_time_format_title">Date/time format</string>
     <string name="pref_date_time_format_summary">Change the format of the displayed dates and times</string>
@@ -154,4 +168,5 @@
     <!-- General purpose -->
     <string name="cancel">@android:string/cancel</string>
     <string name="ok">@android:string/ok</string>
+    <string name="close">Close</string>
 </resources>

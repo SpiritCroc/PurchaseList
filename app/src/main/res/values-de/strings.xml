@@ -26,6 +26,10 @@
     <string name="action_search">Suche</string>
     <string name="action_sort_order">Sortierreihenfolge</string>
     <string name="action_hide_duplicates">Duplikate ausblenden</string>
+    <string name="action_picture_local">Lokales Bild wählen</string>
+    <string name="action_picture_url">Bildadresse eingeben</string>
+    <string name="action_picture_remove">Bild entfernen</string>
+    <string name="action_picture_reset">Bild zurücksetzen</string>
 
     <plurals name="action_mode_selected_items">
         <item quantity="one">%d ausgewählt</item>
@@ -43,13 +47,21 @@
 
     <string name="toast_prefs_required">Bitte Serveradresse und Nutzername eingeben</string>
     <string name="toast_server_error">Fehler bei der Server-Kommunikation, bitte Server-Setup überprüfen</string>
+    <string name="toast_no_resolver_for_action">Keine passende Anwendung gefunden</string>
 
     <string name="add_item_title">Neuer Eintrag</string>
     <string name="edit_item_title">Eintrag bearbeiten</string>
     <string name="edit_item_name">Name</string>
     <string name="edit_item_info">Zusatzinfo</string>
     <string name="edit_item_usage">Verwendung/Rezept</string>
+    <string name="edit_item_picture_url">Bildadresse</string>
+    <string name="edit_item_picture_add">Neues Bild</string>
+    <string name="import_local_picture_dialog_title">Bildimport</string>
+    <string name="import_local_picture_dialog_message">Bild wird verarbeitet</string>
 
+    <string name="show_item_modify">Bearbeiten</string>
+
+    <string name="show_item_re_add">Nochmal</string>
     <string name="re_add_item_title">Erneut hinzufügen</string>
     <string name="re_add_item_message">\"%s\" wieder zur aktuellen Liste hinzufügen?</string>
 
@@ -70,7 +82,7 @@
 
     <string name="boss_completed_dialog_title">Boss</string>
     <string name="boss_completed_dialog_summary">Gefahr! Was soll mit \"%s\" passieren?</string>
-    <string name="boss_completed_dialog_modify">Bearbeiten</string>
+    <string name="boss_completed_dialog_modify">@string/show_item_modify</string>
     <string name="boss_completed_dialog_delete">Löschen</string>
 
     <!--
@@ -108,6 +120,8 @@
     <string name="pref_dino_summary_off">" "</string>
     <string name="pref_user_secret_title">Geheimnis</string>
     <string name="pref_user_secret_summary">""</string>
+    <string name="pref_overview_picture_preview_title">Bildvorschau</string>
+    <string name="pref_overview_picture_preview_summary">Bilder in Listeneinträgen anzeigen</string>
 
     <string name="pref_date_time_format_title">Datum- und Zeitformat</string>
     <string name="pref_date_time_format_summary">Formatierung für angezeigte Daten und Zeiten ändern</string>
@@ -150,4 +164,5 @@
     <!-- General purpose -->
     <string name="cancel">@android:string/cancel</string>
     <string name="ok">@android:string/ok</string>
+    <string name="close">Schließen</string>
 </resources>

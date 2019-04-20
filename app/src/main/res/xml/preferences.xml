@@ -49,6 +49,12 @@
             android:entryValues="@array/pref_theme_values"
             android:defaultValue="0" />
 
+        <CheckBoxPreference
+            android:key="overview_picture_preview"
+            android:title="@string/pref_overview_picture_preview_title"
+            android:summary="@string/pref_overview_picture_preview_summary"
+            android:defaultValue="false" />
+
         <PreferenceScreen
             android:title="@string/pref_date_time_format_title"
             android:summary="@string/pref_date_time_format_summary"

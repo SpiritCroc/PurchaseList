@@ -110,15 +110,9 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
         View parent = super.onCreateView(inflater, parentContainer, savedInstanceState);
         parentContainer.addView(parent);
         // Custom click listener
-        ListView list = view.findViewById(R.id.item_list);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        showReAddDialog(mListAdapter.getItem(i));
-                    }
-                });
         if (BossUtils.isBoss(getActivity())) {
             // Extra functionality
+            ListView list = view.findViewById(R.id.item_list);
             list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i,
@@ -193,28 +187,6 @@ public class ShowCompletedItemsFragment extends ShowItemsFragment
         mSearchView.setQuery("", false);
         mSearchView.setIconified(true);
         reload();
-    }
-
-    private void showReAddDialog(final Item oldItem) {
-        new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.re_add_item_title)
-                .setMessage(getString(R.string.re_add_item_message, oldItem.name))
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {}
-                })
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Item addItem = oldItem.copy();
-                        addItem.id = System.currentTimeMillis();
-                        addItem.creationDate = System.currentTimeMillis();
-                        addItem.creator = Settings.getString(getActivity(), Settings.WHOAMI);
-                        addItem.completionDate = -1;
-                        ShowCompletedItemsFragment.this.editItem(true, addItem, false);
-                    }
-                })
-                .show();
     }
 
     @Override

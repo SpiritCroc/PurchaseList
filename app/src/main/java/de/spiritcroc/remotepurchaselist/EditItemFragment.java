@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,31 +22,63 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class EditItemFragment extends DialogFragment {
+import com.bumptech.glide.Glide;
+
+public class EditItemFragment extends DialogFragment
+        implements ServerCommunicator.OnHttpsSetupFinishListener {
+
+    private static final String TAG = EditItemFragment.class.getSimpleName();
 
     private static final String KEY_ADD_ITEM = DialogFragment.class.getName() + ".add_item";
     private static final String KEY_EDIT_ITEM = DialogFragment.class.getName() + ".edit_item";
     private static final String KEY_INIT_ITEM = DialogFragment.class.getName() + ".init_item";
 
+    private static final int RESULT_CODE_ADD_LOCAL_PICTURE = 1;
+
     private boolean mAddItem = true;
     private Item mInitItem;
     private Item mEditItem;
 
+    private enum PictureChangeAction {
+        NONE,
+        //REMOVE, // clear url field to remove: mEditPictureUrl.setText("");
+        EXTERNAL,
+        LOCAL,
+    }
+    private PictureChangeAction mPictureChangeAction = PictureChangeAction.NONE;
+    private String mPictureUrl;
+
     private OnEditItemResultListener mListener;
 
     private AutoCompleteTextView mEditName;
-    private TextView mEditInfo;
+    private EditText mEditInfo;
     private AutoCompleteTextView mEditUsage;
+    private EditText mEditPictureUrl;
+    private View mEditPictureUrlLayout;
+    private ImageView mEditPicture;
+    private PopupMenu mEditPictureMenu;
 
     public EditItemFragment setEditItem(Item editItem) {
         mInitItem = editItem;
@@ -78,29 +110,98 @@ public class EditItemFragment extends DialogFragment {
         final View dialogView = activity.getLayoutInflater()
                 .inflate(R.layout.dialog_edit_item, null);
         mEditName = (AutoCompleteTextView) dialogView.findViewById(R.id.name_edit);
-        mEditInfo = (TextView) dialogView.findViewById(R.id.info_edit);
+        mEditInfo = (EditText) dialogView.findViewById(R.id.info_edit);
         mEditUsage = (AutoCompleteTextView) dialogView.findViewById(R.id.usage_edit);
+        mEditPictureUrl = (EditText) dialogView.findViewById(R.id.picture_url_edit);
+        mEditPictureUrlLayout = dialogView.findViewById(R.id.picture_url_edit_layout);
+        mEditPicture = (ImageView) dialogView.findViewById(R.id.picture_edit);
         if (mEditItem != null) {
             mEditName.setText(mEditItem.name);
             mEditInfo.setText(mEditItem.info);
             mEditUsage.setText(mEditItem.usage);
+            if (TextUtils.isEmpty(mEditItem.localPictureUrl)) {
+                mPictureUrl = mEditItem.pictureUrl;
+                mEditPictureUrl.setText(mPictureUrl);
+            } else {
+                mEditPictureUrl.setText("");
+            }
         }
+        updatePicturePreview();
+        mEditPictureMenu = new PopupMenu(getActivity(), mEditPicture);
+        mEditPictureMenu.inflate(R.menu.popup_edit_picture);
+        mEditPictureMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_picture_local:
+                        openLocalPictureChooser();
+                        return true;
+                    case R.id.action_picture_url:
+                        if (mPictureChangeAction == PictureChangeAction.LOCAL) {
+                            // Clear
+                            mEditPictureUrl.setText("");
+                        }
+                        mEditPictureUrlLayout.setVisibility(View.VISIBLE);
+                        return true;
+                    case R.id.action_picture_remove:
+                        // Set to "external" empty URL
+                        mEditPictureUrl.setText("");
+                        mEditPictureUrlLayout.setVisibility(View.GONE);
+                        return true;
+                    case R.id.action_picture_reset:
+                        resetPicture();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
         mEditName.setAdapter(new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1,
                 SuggestionsRetriever.getCachedSuggestions(activity)));
         mEditName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (TextUtils.isEmpty(mEditInfo.getText())) {
-                    mEditInfo.setText(SuggestionsRetriever.getCorrespondingInfoSuggestion(activity,
-                            mEditName.getText().toString()));
+                    Item suggestionItem = SuggestionsRetriever
+                            .getSuggestionItemInfosByName(activity, mEditName.getText().toString());
+                    mEditInfo.setText(suggestionItem.info);
                     mEditInfo.setSelectAllOnFocus(true);
+                    mEditPictureUrl.setText(suggestionItem.pictureUrl);
+                    mEditPictureUrl.setSelectAllOnFocus(true);
                 } else {
                     mEditInfo.setSelectAllOnFocus(false);
+                    mEditPictureUrl.setSelectAllOnFocus(false);
                 }
             }
         });
         mEditUsage.setAdapter(new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1,
                 UsageSuggestionsRetriever.getCachedSuggestions(activity)));
+        mEditPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Item preview = getPreview(false);
+                Menu menu = mEditPictureMenu.getMenu();
+                menu.findItem(R.id.action_picture_remove).setVisible(preview.hasPicture());
+                menu.findItem(R.id.action_picture_url).setVisible(
+                        mEditPictureUrlLayout.getVisibility() != View.VISIBLE);
+                menu.findItem(R.id.action_picture_reset).setVisible(mInitItem != null &&
+                        mPictureChangeAction != PictureChangeAction.NONE);
+                mEditPictureMenu.show();
+            }
+        });
+        mEditPictureUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                pictureChangeCleanup();
+                readPictureUrl();
+                updatePicturePreview();
+            }
+        });
         AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                 .setTitle(mAddItem ? R.string.add_item_title : R.string.edit_item_title)
                 .setView(dialogView)
@@ -108,7 +209,8 @@ public class EditItemFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // Only close dialog
+                        // Clean up
+                        pictureChangeCleanup();
                     }
                 });
         final AlertDialog dialog = builder.create();
@@ -119,26 +221,20 @@ public class EditItemFragment extends DialogFragment {
                         .setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                String name = mEditName.getText().toString();
-                                if (TextUtils.isEmpty(name)) {
-                                    mEditName.setError(getString(R.string.error_empty));
+                                Item preview = getPreview(true);
+                                if (preview == null) {
                                     return;
                                 }
-                                String whoami = Settings.getString(activity, Settings.WHOAMI);
-                                Item preview = new Item();
-                                preview.id = mAddItem ? System.currentTimeMillis() : mEditItem.id;
-                                preview.name = name;
-                                preview.info = mEditInfo.getText().toString();
-                                preview.usage = mEditUsage.getText().toString();
-                                preview.creator = mAddItem ? whoami : mEditItem.creator;
-                                preview.updatedBy = whoami;
-                                preview.creationDate = System.currentTimeMillis();
-                                preview.completionDate = mAddItem ? -1 : mEditItem.completionDate;
                                 if (mInitItem == null || !preview.name.equals(mInitItem.name)
                                         || !preview.info.equals(mInitItem.info)
-                                        || !preview.usage.equals(mInitItem.usage)) {
+                                        || !preview.usage.equals(mInitItem.usage)
+                                        || !preview.pictureUrl.equals(mInitItem.pictureUrl)
+                                        || !preview.localPictureUrl.equals(
+                                                mInitItem.localPictureUrl)) {
                                     // Something has changed
-                                    mListener.onEditItemResult(mAddItem, preview);
+                                    mListener.onEditItemResult(mAddItem, preview,
+                                            mPictureChangeAction == PictureChangeAction.LOCAL,
+                                            mPictureChangeAction != PictureChangeAction.EXTERNAL);
                                 } // else: no update needed, only close dialog
                                 dismiss();
                             }
@@ -150,6 +246,61 @@ public class EditItemFragment extends DialogFragment {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
         );
         return dialog;
+    }
+
+    private Item getPreview(boolean enforceCorrectness) {
+        String name = mEditName.getText().toString();
+        if (enforceCorrectness && TextUtils.isEmpty(name)) {
+            mEditName.setError(getString(R.string.error_empty));
+            return null;
+        }
+        String whoami = Settings.getString(getActivity(), Settings.WHOAMI);
+        Item preview = new Item();
+        preview.id = mAddItem ? System.currentTimeMillis() : mEditItem.id;
+        preview.name = name;
+        preview.info = mEditInfo.getText().toString();
+        preview.usage = mEditUsage.getText().toString();
+        switch (mPictureChangeAction) {
+            case NONE:
+                if (mInitItem == null) {
+                    preview.pictureUrl = "";
+                    preview.localPictureUrl = "";
+                } else {
+                    preview.pictureUrl = mInitItem.pictureUrl;
+                    preview.localPictureUrl = mInitItem.localPictureUrl;
+                }
+                break;
+            case EXTERNAL:
+                preview.pictureUrl = mPictureUrl;
+                preview.localPictureUrl = "";
+                break;
+            case LOCAL:
+                preview.localPictureUrl = mPictureUrl;
+                preview.pictureUrl = "";
+                break;
+            default:
+                Log.e(TAG, "Unhandled picture change action " +
+                        mPictureChangeAction);
+                if (mInitItem == null) {
+                    preview.pictureUrl = "";
+                    preview.localPictureUrl = "";
+                } else {
+                    preview.pictureUrl = mInitItem.pictureUrl;
+                    preview.localPictureUrl = mInitItem.localPictureUrl;
+                }
+                break;
+        }
+        preview.creator = mAddItem ? whoami : mEditItem.creator;
+        preview.updatedBy = whoami;
+        preview.creationDate = System.currentTimeMillis();
+        preview.completionDate = mAddItem ? -1 : mEditItem.completionDate;
+        return preview;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        // Clean up
+        pictureChangeCleanup();
     }
 
     @Override
@@ -167,6 +318,9 @@ public class EditItemFragment extends DialogFragment {
         if (mEditUsage != null) {
             mEditItem.usage = mEditUsage.getText().toString();
         }
+        if (mEditPictureUrl != null) {
+            mEditItem.pictureUrl = mEditPictureUrl.getText().toString();
+        }
         outState.putBoolean(KEY_ADD_ITEM, mAddItem);
         outState.putParcelable(KEY_EDIT_ITEM, mEditItem);
         if (!mAddItem) {
@@ -174,7 +328,126 @@ public class EditItemFragment extends DialogFragment {
         }
     }
 
+    private void resetPicture() {
+        if (mInitItem != null && TextUtils.isEmpty(mInitItem.localPictureUrl)) {
+            // This also sets mPictureUrl
+            mEditPictureUrl.setText(mInitItem.pictureUrl);
+        } else {
+            mEditPictureUrl.setText("");
+        }
+        mPictureChangeAction = PictureChangeAction.NONE;
+        mEditPictureUrlLayout.setVisibility(View.GONE);
+        updatePicturePreview();
+    }
+
+    private void openLocalPictureChooser() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
+            Log.e(TAG, "No activity to choose pictures found");
+            Toast.makeText(getActivity(), R.string.toast_no_resolver_for_action, Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            startActivityForResult(intent, RESULT_CODE_ADD_LOCAL_PICTURE);
+        }
+    }
+
+    private void updatePicturePreview() {
+        if (ServerCommunicator.setupHttps(getActivity(), EditItemFragment.this)) {
+            onHttpsReady();
+        }
+    }
+
+    private void pictureChangeCleanup() {
+        if (mPictureChangeAction == PictureChangeAction.LOCAL && !TextUtils.isEmpty(mPictureUrl)) {
+            LocalPictureHandler.removeLocalPicture(mPictureUrl);
+            mPictureUrl = null;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case RESULT_CODE_ADD_LOCAL_PICTURE:
+                    // Clean up previous changes
+                    pictureChangeCleanup();
+                    // Import new picture
+                    new ImportLocalPictureTask().execute(data);
+                    break;
+            }
+        }
+    }
+
+    private class ImportLocalPictureTask extends AsyncTask<Intent, Void, String> {
+        private Dialog mDialog;
+        private Context mContext;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mContext = getActivity().getApplicationContext();
+            View progressView = getActivity().getLayoutInflater()
+                    .inflate(R.layout.dialog_progress_indeterminate, null);
+            TextView messageView = progressView.findViewById(R.id.progress_message);
+            messageView.setText(R.string.import_local_picture_dialog_message);
+            mDialog = new AlertDialog.Builder(mContext)
+                    .setCancelable(false)
+                    .setTitle(R.string.import_local_picture_dialog_title)
+                    .create();
+        }
+        @Override
+        protected String doInBackground(Intent... data) {
+            if (data.length != 1) {
+                Log.e(TAG, "Invalid parameter count for ImportLocalPictureTask: " + data.length);
+                return null;
+            }
+            return LocalPictureHandler.importLocalPicture(mContext, data[0]);
+        }
+        @Override
+        protected void onPostExecute(String url) {
+            mDialog.dismiss();
+            if (!TextUtils.isEmpty(url)) {
+                // Erase editUrl first - this will lead to change of picture URL and action,
+                // so change these after that
+                mEditPictureUrl.setText("");
+                mEditPictureUrlLayout.setVisibility(View.GONE);
+                mPictureUrl = url;
+                mPictureChangeAction = PictureChangeAction.LOCAL;
+                updatePicturePreview();
+            }
+        }
+    }
+
+    private void readPictureUrl() {
+        mPictureUrl = mEditPictureUrl.getText().toString();
+        if (!TextUtils.isEmpty(mPictureUrl) && !mPictureUrl.contains("://")) {
+            mPictureUrl = "https://" + mPictureUrl;
+        }
+        mPictureChangeAction = PictureChangeAction.EXTERNAL;
+    }
+
+    @Override
+    public void onHttpsReady() {
+        Item picturePreviewItem = new Item();
+        if (mPictureChangeAction == PictureChangeAction.LOCAL) {
+            picturePreviewItem.localPictureUrl = mPictureUrl;
+        } else if (mPictureChangeAction == PictureChangeAction.NONE) {
+            if (mInitItem != null) {
+                picturePreviewItem = mInitItem;
+            }
+        } else {
+            picturePreviewItem.pictureUrl = mPictureUrl;
+        }
+        Glide.with(mEditPicture)
+                .load(picturePreviewItem.getPictureUrl(getActivity()))
+                .error(R.drawable.ic_broken_picture)
+                .fallback(R.drawable.ic_picture_add)
+                .centerCrop()
+                .into(mEditPicture);
+    }
+
     public interface OnEditItemResultListener {
-        void onEditItemResult(boolean add, Item resultItem);
+        void onEditItemResult(boolean add, Item resultItem, boolean localPictureUpload,
+                              boolean skipUrlUpdate);
     }
 }

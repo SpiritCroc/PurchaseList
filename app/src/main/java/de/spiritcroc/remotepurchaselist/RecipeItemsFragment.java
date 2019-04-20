@@ -202,7 +202,7 @@ public class RecipeItemsFragment extends ShowItemsFragment {
                     }
                     @Override
                     public int getTextColorForPosition(int groupPosition, int childPosition) {
-                        if (getItemForPosition(groupPosition, childPosition).completionDate == -1) {
+                        if (!getItemForPosition(groupPosition, childPosition).isCompleted()) {
                             // Already on active list
                             return mActiveItemColor;
                         } else {
@@ -337,7 +337,7 @@ public class RecipeItemsFragment extends ShowItemsFragment {
                             addItem.creationDate = System.currentTimeMillis();
                             addItem.creator = Settings.getString(getActivity(), Settings.WHOAMI);
                             addItem.completionDate = -1;
-                            RecipeItemsFragment.this.editItem(true, addItem, false);
+                            RecipeItemsFragment.this.editItem(true, addItem, false, false);
                         }
                         // We're done
                         getActivity().finish();

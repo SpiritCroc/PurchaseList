@@ -18,7 +18,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingLeft="@dimen/dialog_horizontal_padding"
     android:paddingRight="@dimen/dialog_horizontal_padding"
     android:paddingTop="@dimen/dialog_top_padding">
@@ -55,5 +55,33 @@
             android:hint="@string/edit_item_usage"
             android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/picture_url_edit_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:layout_gravity="bottom">
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/picture_url_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_item_picture_url"
+                android:inputType="textUri"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/picture_edit"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/dialog_picture_selection_preview"
+            android:layout_height="@dimen/dialog_picture_selection_preview" />
+    </LinearLayout>
 
 </LinearLayout>

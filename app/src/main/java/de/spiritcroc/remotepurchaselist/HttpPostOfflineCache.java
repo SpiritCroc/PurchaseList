@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,8 +26,10 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class HttpPostOfflineCache {
 
@@ -45,6 +47,15 @@ public abstract class HttpPostOfflineCache {
             "http_post_cache_remove_preview_count";
     private static final String PREF_CACHED_REMOVE_PREVIEW_ = "http_post_cache_remove_preview_";
     private static final String PREF_CACHED_DELETE_PREVIEW= "http_post_cache_deleted_preview";
+    private static final String PREF_CACHED_INSTRUCTION_MULTIPARAM_KIND_ =
+            "http_post_cache_multiparam_kind_";
+    private static final String PREF_CACHED_INSTRUCTION_MULTIPARAM_KEY_ =
+            "http_post_cache_multiparam_key_";
+    private static final String PREF_CACHED_INSTRUCTION_MULTIPARAM_VALUE_ =
+            "http_post_cache_multiparam_value_";
+    private static final String CACHED_INSTRUCTION_PARAM_MULTIPART_INDICATOR = "䷼";
+    private static final int CACHED_INSTRUCTION_MULTIPARAM_KIND_STRING = 0;
+    private static final int CACHED_INSTRUCTION_MULTIPARAM_KIND_FILE = 1;
 
     // Don't instantiate
     private HttpPostOfflineCache() {}
@@ -54,6 +65,7 @@ public abstract class HttpPostOfflineCache {
         clearItemCache(context);
         clearRemoveCache(context);
         clearDeleteCache(context);
+        clearPictureCache(context);
     }
 
     public static void clearPreviewCacheIfInstructionsEmpty(Context context) {
@@ -62,6 +74,29 @@ public abstract class HttpPostOfflineCache {
             clearItemCache(context);
             clearRemoveCache(context);
             clearDeleteCache(context);
+            // Actually, we can't be sure that pictures are unused. Consider following scenario:
+            // 1. Import picture locally
+            // 2. Reload list in background
+            // 3. Add instruction to upload picture
+            // In this case, we have to ensure 2. doesn't delete the picture cache.
+            /*
+            clearPictureCache(context);
+            */
+        }
+    }
+    private static void addItemPreviewToCache(Item cachePreview, SharedPreferences sp,
+                                              SharedPreferences.Editor e, int instructionCount) {
+        if (DEBUG) Log.d(TAG, "Adding preview " + cachePreview.toString());
+        if (!cachePreview.isCompleted()) {
+            // Normal (open tasks) cache
+            int previewCount = sp.getInt(PREF_CACHED_PREVIEWS_COUNT, instructionCount);
+            cachePreview.saveToCachePreferences(e, PREF_CACHED_PREVIEW_ + previewCount);
+            e.putInt(PREF_CACHED_PREVIEWS_COUNT, ++previewCount);
+        } else {
+            // Completed tasks cache
+            int previewCount = sp.getInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, instructionCount);
+            cachePreview.saveToCachePreferences(e, PREF_CACHED_REMOVE_PREVIEW_ + previewCount);
+            e.putInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, ++previewCount);
         }
     }
 
@@ -81,25 +116,48 @@ public abstract class HttpPostOfflineCache {
                 .putString(PREF_CACHED_INSTRUCTION_PARAMS_ + instructionCount, params);
         // Add preview to cache
         if (cachePreview != null) {
-            if (DEBUG) Log.d(TAG, "Adding preview " + cachePreview.toString());
-            if (cachePreview.completionDate <= 0) {
-                // Normal (open tasks) cache
-                int previewCount = sp.getInt(PREF_CACHED_PREVIEWS_COUNT, instructionCount);
-                cachePreview.saveToCachePreferences(e, PREF_CACHED_PREVIEW_ + previewCount);
-                e.putInt(PREF_CACHED_PREVIEWS_COUNT, ++previewCount);
-            } else {
-                // Completed tasks cache
-                int previewCount = sp.getInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, instructionCount);
-                cachePreview.saveToCachePreferences(e, PREF_CACHED_REMOVE_PREVIEW_ + previewCount);
-                e.putInt(PREF_CACHED_REMOVE_PREVIEW_COUNT, ++previewCount);
-            }
+            addItemPreviewToCache(cachePreview, sp, e, instructionCount);
+        }
+        e.putInt(PREF_CACHED_INSTRUCTIONS_COUNT, ++instructionCount).apply();
+    }
+
+    private static String getMultipartParamKindKey(int instructionCount, int paramCount) {
+        return PREF_CACHED_INSTRUCTION_MULTIPARAM_KIND_ + instructionCount + "_" + paramCount;
+    }
+
+    private static String getMultipartParamKeyKey(int instructionCount, int paramCount) {
+        return PREF_CACHED_INSTRUCTION_MULTIPARAM_KEY_ + instructionCount + "_" + paramCount;
+    }
+
+    private static String getMultipartParamValueKey(int instructionCount, int paramCount) {
+        return PREF_CACHED_INSTRUCTION_MULTIPARAM_VALUE_ + instructionCount + "_" + paramCount;
+    }
+
+    public static void addItemToCache(Context context, String site,
+                                      List<MultiPartRequestParameter> params, Item cachePreview) {
+        if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
+            // Don't modify demo list
+            return;
+        }
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        int instructionCount = sp.getInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
+        if (DEBUG) Log.d(TAG, "Adding request to " + site + " with multipart parameters");
+        SharedPreferences.Editor e = sp.edit();
+        // Add instructions to cache
+        e.putString(PREF_CACHED_INSTRUCTION_SITE_ + instructionCount, site)
+                .putString(PREF_CACHED_INSTRUCTION_PARAMS_ + instructionCount,
+                        CACHED_INSTRUCTION_PARAM_MULTIPART_INDICATOR);
+        MultiPartRequestParameter.store(e, instructionCount, params);
+        // Add preview to cache
+        if (cachePreview != null) {
+            addItemPreviewToCache(cachePreview, sp, e, instructionCount);
         }
         e.putInt(PREF_CACHED_INSTRUCTIONS_COUNT, ++instructionCount).apply();
     }
 
 
     public static void addItemsToRemoveCache(Context context, String site, String params,
-                                             ArrayList<Item> removeItems) {
+                                             List<Item> removeItems) {
         if (Settings.getBoolean(context, Settings.DEMO_LIST)) {
             // Don't modify demo list
             return;
@@ -163,9 +221,21 @@ public abstract class HttpPostOfflineCache {
         for (int i = 0; i < instructionCount; i++) {
             e.remove(PREF_CACHED_INSTRUCTION_SITE_ + i);
             e.remove(PREF_CACHED_INSTRUCTION_PARAMS_ + i);
+            clearMultipartParams(sp, e, instructionCount);
         }
         e.putInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
         e.apply();
+    }
+
+    private static void clearMultipartParams(SharedPreferences sp, SharedPreferences.Editor e,
+                                             int instructionCount) {
+        int paramCount = 0;
+        while (sp.contains(getMultipartParamKindKey(instructionCount, paramCount))) {
+            e.remove(getMultipartParamKindKey(instructionCount, paramCount));
+            e.remove(getMultipartParamKeyKey(instructionCount, paramCount));
+            e.remove(getMultipartParamValueKey(instructionCount, paramCount));
+            paramCount++;
+        }
     }
 
     private static void clearItemCache(Context context) {
@@ -199,11 +269,29 @@ public abstract class HttpPostOfflineCache {
                 .remove(PREF_CACHED_DELETE_PREVIEW).apply();
     }
 
+    private static void clearPictureCache(Context context) {
+        LocalPictureHandler.clear(context);
+    }
+
     public static void executePending(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         int instructionsCount = sp.getInt(PREF_CACHED_INSTRUCTIONS_COUNT, 0);
         if (DEBUG) Log.d(TAG, "Cached instructions: " + instructionsCount);
         ArrayList<Integer> stillInCache = new ArrayList<>();
+        ServerCommunicator.OnFileUploadListener fileUploadListener =
+                new ServerCommunicator.OnFileUploadListener() {
+                    private ArrayList<File> removeFiles = new ArrayList<>();
+                    @Override
+                    public void onAttemptFileUpload(File file) {
+                        removeFiles.add(file);
+                    }
+                    @Override
+                    public void onUploadDone() {
+                        for (File file: removeFiles) {
+                            LocalPictureHandler.removeLocalPicture(file.toURI().toString());
+                        }
+                    }
+        };
         // Execute pending
         for (int i = 0; i < instructionsCount; i++) {
             String site = sp.getString(PREF_CACHED_INSTRUCTION_SITE_ + i, null);
@@ -212,9 +300,28 @@ public abstract class HttpPostOfflineCache {
                 continue;
             }
             String params = sp.getString(PREF_CACHED_INSTRUCTION_PARAMS_ + i, null);
-            JSONObject result = ServerCommunicator.requestHttp(context, site, params);
+            JSONObject result;
+            if (CACHED_INSTRUCTION_PARAM_MULTIPART_INDICATOR.equals(params)) {
+                List<MultiPartRequestParameter> multipartParams =
+                        MultiPartRequestParameter.restore(sp, i);
+                result = ServerCommunicator.requestHttp(context, site, multipartParams,
+                        fileUploadListener);
+            } else {
+                result = ServerCommunicator.requestHttp(context, site, params, fileUploadListener);
+            }
             if (result == null) {
                 stillInCache.add(i);
+            } else if (DEBUG) {
+                // Check if success, keep if failed for further inspection
+                try {
+                    if (result.getInt(Constants.JSON.SUCCESS) == 0) {
+                        Log.e(TAG, "That was not a success! Keeping in cache for DEBUG purposes " +
+                                "(keep in mind this will be discarded on debug builds!)");
+                        stillInCache.add(i);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         // Update cache
@@ -230,11 +337,17 @@ public abstract class HttpPostOfflineCache {
                             sp.getString(PREF_CACHED_INSTRUCTION_SITE_ + from, null));
                     e.putString(PREF_CACHED_INSTRUCTION_PARAMS_ + i,
                             sp.getString(PREF_CACHED_INSTRUCTION_PARAMS_ + from, null));
+                    // MultipartParams from
+                    List<MultiPartRequestParameter> multipartParams =
+                            MultiPartRequestParameter.restore(sp, from);
+                    // MultipartParams to
+                    MultiPartRequestParameter.store(e, i, multipartParams);
                 }
             } else {
                 if (DEBUG) Log.d(TAG, "Delete instruction cache " + i);
                 e.remove(PREF_CACHED_INSTRUCTION_SITE_ + i);
                 e.remove(PREF_CACHED_INSTRUCTION_PARAMS_ + i);
+                clearMultipartParams(sp, e, i);
             }
         }
         e.putInt(PREF_CACHED_INSTRUCTIONS_COUNT, stillInCache.size());
@@ -305,5 +418,74 @@ public abstract class HttpPostOfflineCache {
         }
 
         return items.toArray(new Item[items.size()]);
+    }
+
+    public static class MultiPartRequestParameter
+            extends ServerCommunicator.MultiPartRequestParameter {
+        public MultiPartRequestParameter(String key, Object value) {
+            super(key, value);
+        }
+        private void store(SharedPreferences.Editor e, int instructionCount, int paramCount) {
+            String persistVal;
+            if (value instanceof String) {
+                persistVal = (String) value;
+                e.putInt(getMultipartParamKindKey(instructionCount, paramCount),
+                        CACHED_INSTRUCTION_MULTIPARAM_KIND_STRING);
+            } else if (value instanceof File) {
+                persistVal = ((File) value).toURI().toString();
+                e.putInt(getMultipartParamKindKey(instructionCount, paramCount),
+                        CACHED_INSTRUCTION_MULTIPARAM_KIND_FILE);
+            } else {
+                persistVal = String.valueOf(value);
+                e.putInt(getMultipartParamKindKey(instructionCount, paramCount),
+                        CACHED_INSTRUCTION_MULTIPARAM_KIND_STRING);
+            }
+            e.putString(getMultipartParamKeyKey(instructionCount, paramCount), key);
+            e.putString(getMultipartParamValueKey(instructionCount, paramCount), persistVal);
+        }
+        public static void store(SharedPreferences.Editor e, int instructionCount,
+                                 List<MultiPartRequestParameter> params) {
+            int paramCount = 0;
+            for (MultiPartRequestParameter param: params) {
+                param.store(e, instructionCount, paramCount++);
+            }
+            // null-terminate
+            e.remove(getMultipartParamKindKey(instructionCount, paramCount));
+            e.remove(getMultipartParamKeyKey(instructionCount, paramCount));
+            e.remove(getMultipartParamValueKey(instructionCount, paramCount));
+        }
+        public static List<MultiPartRequestParameter> restore(SharedPreferences sp,
+                                                              int instructionCount) {
+            int paramCount = 0;
+            ArrayList<MultiPartRequestParameter> result = new ArrayList<>();
+            MultiPartRequestParameter next = restore(sp, instructionCount, paramCount);
+            while (next != null) {
+                result.add(next);
+                next = restore(sp, instructionCount, ++paramCount);
+            }
+            return result;
+        }
+        private static MultiPartRequestParameter restore(SharedPreferences sp, int instructionCount,
+                                                 int paramCount) {
+            int kind = sp.getInt(getMultipartParamKindKey(instructionCount, paramCount), -1);
+            String persistVal = sp.getString(getMultipartParamValueKey(instructionCount, paramCount),
+                    "");
+            String key = sp.getString(getMultipartParamKeyKey(instructionCount, paramCount), null);
+            if (TextUtils.isEmpty(key)) {
+                return null;
+            }
+            Object value;
+            switch (kind) {
+                case CACHED_INSTRUCTION_MULTIPARAM_KIND_STRING:
+                    value = persistVal;
+                    break;
+                case CACHED_INSTRUCTION_MULTIPARAM_KIND_FILE:
+                    value = LocalPictureHandler.fileFromURI(persistVal);
+                    break;
+                default:
+                    return null;
+            }
+            return new MultiPartRequestParameter(key, value);
+        }
     }
 }

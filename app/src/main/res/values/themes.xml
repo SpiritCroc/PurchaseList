@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (C) 2017 SpiritCroc
+    Copyright (C) 2017-2019 SpiritCroc
     Email: spiritcroc@gmail.com
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
         <item name="colorPrimaryDark">#689f38</item>
         <item name="colorAccent">#2196f3</item>
         <item name="colorIndicatorNotSynced">?android:attr/textColorSecondary</item>
+        <item name="colorIndicatorPicture">?android:attr/textColorSecondary</item>
         <item name="colorListDivider">#1f000000</item>
         <item name="colorListItemUsage">?android:attr/textColorHint</item>
         <item name="backgroundColorListItem">@android:color/transparent</item>
@@ -35,6 +36,7 @@
         <item name="colorPrimaryDark">#689f38</item>
         <item name="colorAccent">#2196f3</item>
         <item name="colorIndicatorNotSynced">?android:attr/textColorSecondary</item>
+        <item name="colorIndicatorPicture">?android:attr/textColorSecondary</item>
         <item name="colorListDivider">#1fffffff</item>
         <item name="colorListItemUsage">?android:attr/textColorHint</item>
         <item name="backgroundColorListItem">@android:color/transparent</item>

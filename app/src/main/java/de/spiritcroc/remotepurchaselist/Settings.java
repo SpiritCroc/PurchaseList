@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -104,6 +104,12 @@ public abstract class Settings {
     public static final String INFO_SUGGESTIONS = "info_suggestions";
 
     /**
+     * Cached suggestions for item picture urls corresponding to the names stored in
+     * NAME_SUGGESTIONS.
+     */
+    public static final String PICTURE_URL_SUGGESTIONS = "picture_url_suggestions";
+
+    /**
      * Simulate slow internet
      */
     public static final String SIMULATE_SLOW_INTERNET = "simulate_slow_internet";
@@ -127,6 +133,11 @@ public abstract class Settings {
      * Usage suggestions
      */
     public static final String USAGE_SUGGESTIONS = "usage_suggestions";
+
+    /**
+     * Whether to show picture preview in overview
+     */
+    public static final String OVERVIEW_PICTURE_PREVIEW = "overview_picture_preview";
 
 
     /**
@@ -192,6 +203,7 @@ public abstract class Settings {
             case DEMO_LIST:
             case HIDE_DUPLICATES_COMPLETED:
             case BOSS_MODE:
+            case OVERVIEW_PICTURE_PREVIEW:
                 return getSharedPreferences(context).getBoolean(key, false);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);

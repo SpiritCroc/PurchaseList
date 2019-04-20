@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 SpiritCroc
+ * Copyright (C) 2017-2019 SpiritCroc
  * Email: spiritcroc@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,11 @@
 
 package de.spiritcroc.remotepurchaselist;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 public class Item implements Parcelable {
     public long id;
@@ -29,6 +31,8 @@ public class Item implements Parcelable {
     public String usage;
     public String creator;
     public String updatedBy;
+    public String pictureUrl = "";
+    public String localPictureUrl = "";
     public long creationDate;
     public long completionDate = -1;
     private boolean mIsCached = false;
@@ -49,6 +53,8 @@ public class Item implements Parcelable {
         out.usage = in.usage;
         out.creator = in.creator;
         out.updatedBy = in.updatedBy;
+        out.pictureUrl = in.pictureUrl;
+        out.localPictureUrl = in.localPictureUrl;
         out.creationDate = in.creationDate;
         out.completionDate = in.completionDate;
         out.mIsCached = in.mIsCached;
@@ -61,6 +67,8 @@ public class Item implements Parcelable {
     private static final String SP_USAGE = "_usage";
     private static final String SP_CREATOR = "_creator";
     private static final String SP_UPDATED_BY = "_updated_by";
+    private static final String SP_PICTURE_URL = "_picture_url";
+    private static final String SP_LOCAL_PICTURE_URL = "_local_picture_url";
     private static final String SP_CREATION_DATE = "_creation_date";
     private static final String SP_COMPLETION_DATE = "_completion_date";
 
@@ -71,6 +79,8 @@ public class Item implements Parcelable {
         editor.putString(baseKey + SP_USAGE, usage);
         editor.putString(baseKey + SP_CREATOR, creator);
         editor.putString(baseKey + SP_UPDATED_BY, updatedBy);
+        editor.putString(baseKey + SP_PICTURE_URL, pictureUrl);
+        editor.putString(baseKey + SP_LOCAL_PICTURE_URL, localPictureUrl);
         editor.putLong(baseKey + SP_CREATION_DATE, creationDate);
         editor.putLong(baseKey + SP_COMPLETION_DATE, completionDate);
     }
@@ -84,6 +94,8 @@ public class Item implements Parcelable {
             result.usage = sp.getString(baseKey + SP_USAGE, null);
             result.creator = sp.getString(baseKey + SP_CREATOR, null);
             result.updatedBy = sp.getString(baseKey + SP_UPDATED_BY, null);
+            result.pictureUrl = sp.getString(baseKey + SP_PICTURE_URL, null);
+            result.localPictureUrl = sp.getString(baseKey + SP_LOCAL_PICTURE_URL, null);
             result.creationDate = sp.getLong(baseKey + SP_CREATION_DATE, 0);
             result.completionDate = sp.getLong(baseKey + SP_COMPLETION_DATE, 0);
             return result;
@@ -98,6 +110,8 @@ public class Item implements Parcelable {
                 .remove(baseKey + SP_USAGE)
                 .remove(baseKey + SP_CREATOR)
                 .remove(baseKey + SP_UPDATED_BY)
+                .remove(baseKey + SP_PICTURE_URL)
+                .remove(baseKey + SP_LOCAL_PICTURE_URL)
                 .remove(baseKey + SP_CREATION_DATE)
                 .remove(baseKey + SP_COMPLETION_DATE);
     }
@@ -105,7 +119,8 @@ public class Item implements Parcelable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " (" + id + ";" + name + ";" + info + ";" + usage +
-                ";" + creator + ";" + creationDate + ";" + completionDate + ")";
+                ";" + creator + ";" + creationDate + ";" + completionDate + ";" + pictureUrl +
+                ";" + localPictureUrl + ")";
     }
 
     @Override
@@ -121,7 +136,8 @@ public class Item implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLongArray(new long[]{id, creationDate, completionDate});
-        out.writeStringArray(new String[]{name, info, usage, creator, updatedBy});
+        out.writeStringArray(new String[]{name, info, usage, creator, updatedBy, pictureUrl,
+                localPictureUrl});
     }
 
     public static final Parcelable.Creator<Item> CREATOR
@@ -140,6 +156,8 @@ public class Item implements Parcelable {
             item.usage = strings[2];
             item.creator = strings[3];
             item.updatedBy = strings[4];
+            item.pictureUrl = strings[5];
+            item.localPictureUrl = strings[6];
             return item;
         }
 
@@ -148,4 +166,20 @@ public class Item implements Parcelable {
             return new Item[size];
         }
     };
+
+    public boolean isCompleted() {
+        return completionDate > 0;
+    }
+
+    public boolean hasPicture() {
+        return !TextUtils.isEmpty(pictureUrl) || !TextUtils.isEmpty(localPictureUrl);
+    }
+
+    public Object getPictureUrl(Context context) {
+        if (TextUtils.isEmpty(localPictureUrl)) {
+            return ServerCommunicator.getPictureUrl(context, this);
+        } else {
+            return localPictureUrl;
+        }
+    }
 }
