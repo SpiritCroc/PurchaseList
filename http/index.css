@@ -30,3 +30,15 @@ input[type=text] {
     margin: 2px;
     width: 300px;
 }
+a:link {
+    color: white;
+}
+a:visited {
+    color: white;
+}
+a:hover {
+    color: #8bc34a;
+}
+a:active {
+    color: #8bc34a;
+}

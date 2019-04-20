@@ -55,8 +55,9 @@ if (!empty($creator)) {
             $info = mysqli_real_escape_string($db, $_POST["INFO"]);
             $usage = mysqli_real_escape_string($db, $_POST["USAGE"]);
             $creation_date = number_format(round(microtime(true) * 1000), 0, '', '');
+            $picture_url = mysqli_real_escape_string($db, $_POST["PICTURE_URL"]);
 
-            $result = $db->query("UPDATE pitems SET NAME = '$name', INFO = '$info', USAGE1 = '$usage', CREATION_DATE = '$creation_date', UPDATED_BY = '$creator' WHERE ID = $id");
+            $result = $db->query("UPDATE pitems SET NAME = '$name', INFO = '$info', USAGE1 = '$usage', CREATION_DATE = '$creation_date', UPDATED_BY = '$creator', PICTURE_URL = '$picture_url' WHERE ID = $id");
         } else {
             # Add entry
             if (!$dbcon->can_add()) {
@@ -70,8 +71,9 @@ if (!empty($creator)) {
             $usage = mysqli_real_escape_string($db, $_POST["USAGE"]);
             $creation_date = number_format(round(microtime(true) * 1000), 0, '', '');
             $completion_date = -1;
+            $picture_url = mysqli_real_escape_string($db, $_POST["PICTURE_URL"]);
 
-            $result = $db->query("INSERT INTO pitems(ID, NAME, INFO, USAGE1, CREATOR, CREATION_DATE, COMPLETION_DATE) VALUES ('$id', '$name', '$info', '$usage', '$creator', '$creation_date', '$completion_date')");
+            $result = $db->query("INSERT INTO pitems(ID, NAME, INFO, USAGE1, CREATOR, CREATION_DATE, COMPLETION_DATE, PICTURE_URL) VALUES ('$id', '$name', '$info', '$usage', '$creator', '$creation_date', '$completion_date', '$picture_url')");
         }
         # Refresh site
         header("Location: ".$_SERVER['REQUEST_URI']);
@@ -131,9 +133,16 @@ if (!empty($creator)) {
         if ($row["COMPLETION_DATE"] !== null) {
             $item["COMPLETION_DATE"] = htmlspecialchars($row["COMPLETION_DATE"]);
         }
+        if ($row["PICTURE_URL"] !== null) {
+            $item["PICTURE_URL"] = htmlspecialchars($row["PICTURE_URL"]);
+        }
 
-        $itemdate=date("d.m.Y", ($item["CREATION_DATE"]/1000));
-        echo "<tr><td>".$item["NAME"]."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
+        $itemdate = date("d.m.Y", ($item["CREATION_DATE"]/1000));
+        $name = $item["NAME"];
+        if (!empty($item["PICTURE_URL"])) {
+            $name = "<a target=\"_blank\" href=\"".$item["PICTURE_URL"]."\">$name</a>";
+        }
+        echo "<tr><td>".$name."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
         echo "<td><div align=\"center\"><form method=\"post\" action=\"#edit\">";
         echo "<input type=\"hidden\" name=\"ID\" value=\"".$item["ID"]."\"/>";
         echo "<input type=\"hidden\" name=\"CREATOR\" value=\"".$creator."\"/>";
@@ -156,6 +165,7 @@ if (!empty($creator)) {
             $editname = $item["NAME"];
             $editinfo = $item["INFO"];
             $editusage = $item["USAGE"];
+            $picture_url = $item["PICTURE_URL"];
         }
     }
 
@@ -169,6 +179,7 @@ if (!empty($creator)) {
         echo "Produkt:<br/><input type=\"text\" name=\"NAME\" value=\"".$editname."\"/><br/>";
         echo "Info:<br/><input type=\"text\" name=\"INFO\" value=\"".$editinfo."\"/><br/>";
         echo "Verwendung:<br/><input type=\"text\" name=\"USAGE\" value=\"".$editusage."\"/><br/>";
+        echo "Bildadresse:<br/><input type=\"text\" name=\"PICTURE_URL\" value=\"".$picture_url."\"/><br/>";
         echo "<input type=\"hidden\" name=\"ID\" value=\"".mysqli_real_escape_string($db, $_POST["ID"])."\"/>";
         echo "<input type=\"hidden\" name=\"SITE_ACTION\" value=\"edit\"/>";
         echo "<input type=\"submit\" value=\"Aktualisieren\"/>";
@@ -182,6 +193,7 @@ if (!empty($creator)) {
         echo "Produkt:<br/><input type=\"text\" name=\"NAME\"/><br/>";
         echo "Info:<br/><input type=\"text\" name=\"INFO\"/><br/>";
         echo "Verwendung:<br/><input type=\"text\" name=\"USAGE\"/><br/>";
+        echo "Bildadresse:<br/><input type=\"text\" name=\"PICTURE_URL\"/><br/>";
         echo "<input type=\"hidden\" name=\"SITE_ACTION\" value=\"add\"/>";
         echo "<input type=\"submit\" value=\"Hinzuf&uuml;gen\"/>";
         echo "</form>";
@@ -215,9 +227,18 @@ if (!empty($creator)) {
             if ($row["COMPLETION_DATE"] !== null) {
                 $item["COMPLETION_DATE"] = htmlspecialchars($row["COMPLETION_DATE"]);
             }
+            if ($row["PICTURE_URL"] !== null) {
+                $item["PICTURE_URL"] = htmlspecialchars($row["PICTURE_URL"]);
+            }
 
             $itemdate=date("d.m.Y", ($item["COMPLETION_DATE"]/1000));
-            echo "<tr><td>".$item["NAME"]."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
+
+            $name = $item["NAME"];
+            if (!empty($item["PICTURE_URL"])) {
+                $name = "<a target=\"_blank\" href=\"".$item["PICTURE_URL"]."\">$name</a>";
+            }
+
+            echo "<tr><td>".$name."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
             if (isset($_POST["BOSS"]) && $_POST["BOSS"] == "true") {
                 echo "<td>".$item["ID"]."</td>";
             }

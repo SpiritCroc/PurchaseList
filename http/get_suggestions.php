@@ -20,7 +20,7 @@ if (isset($_POST['LIMIT'])) {
 }
 
 # Simple group not enough, we need correct date for order
-$result = $db->query("SELECT l1.NAME, l1.INFO FROM pitems l1 LEFT OUTER JOIN pitems l2 ON (l1.NAME = l2.NAME AND l1.CREATION_DATE < l2.CREATION_DATE) WHERE l2.NAME is null AND l1.COMPLETION_DATE <> -1 ORDER BY l1.CREATION_DATE DESC LIMIT $limit");
+$result = $db->query("SELECT l1.NAME, l1.INFO, l1.PICTURE_URL FROM pitems l1 LEFT OUTER JOIN pitems l2 ON (l1.NAME = l2.NAME AND l1.CREATION_DATE < l2.CREATION_DATE) WHERE l2.NAME is null AND l1.COMPLETION_DATE <> -1 ORDER BY l1.CREATION_DATE DESC LIMIT $limit");
 
 $response["items"] = array();
 while ($row = $result->fetch_assoc()) {
@@ -28,6 +28,9 @@ while ($row = $result->fetch_assoc()) {
     $item["NAME"] = $row["NAME"];
     if ($row["INFO"] !== null) {
         $item["INFO"] = $row["INFO"];
+    }
+    if ($row["PICTURE_URL"] !== null) {
+        $item["PICTURE_URL"] = $row["PICTURE_URL"];
     }
     array_push($response["items"], $item);
 }

@@ -45,8 +45,15 @@ if (isset($_POST['ID']) && isset($_POST['NAME']) && (isset($_POST['UPDATED_BY'])
         // User not allowed to edit completed entries
         $COMPLETE_FILTER = "AND COMPLETION_DATE = -1";
     }
+    if (isset($_POST['PICTURE_URL'])) {
+        $PICTURE_URL = mysqli_real_escape_string($db, $_POST['PICTURE_URL']);
+        $PICTURE_URL = ", PICTURE_URL = '$PICTURE_URL'";
+    } else {
+        # Don't overwrite usage when using legacy requests
+        $PICTURE_URL = "";
+    }
 
-    $result = $db->query("UPDATE pitems SET NAME = '$NAME', INFO = '$INFO', UPDATED_BY = '$UPDATED_BY', CREATION_DATE = '$CREATION_DATE'$USAGE WHERE ID = $ID $COMPLETE_FILTER");
+    $result = $db->query("UPDATE pitems SET NAME = '$NAME', INFO = '$INFO', UPDATED_BY = '$UPDATED_BY', CREATION_DATE = '$CREATION_DATE'$USAGE$PICTURE_URL WHERE ID = $ID $COMPLETE_FILTER");
 
     if ($result) {
         $response["success"] = 1;

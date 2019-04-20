@@ -68,6 +68,9 @@ while ($row = $result->fetch_assoc()) {
     if ($row["USAGE1"] !== null) {
         $item["USAGE"] = $row["USAGE1"];
     }
+    if ($row["PICTURE_URL"] !== null) {
+        $item["PICTURE_URL"] = $row["PICTURE_URL"];
+    }
     array_push($response["items"], $item);
 }
 $response["success"] = 1;

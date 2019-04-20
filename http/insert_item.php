@@ -36,8 +36,13 @@ if (isset($_POST['NAME']) && isset($_POST['CREATOR'])) {
         $CREATION_DATE = number_format(round(microtime(true) * 1000), 0, '', '');
     }
     $COMPLETION_DATE = -1;
+    if (isset($_POST['PICTURE_URL'])) {
+        $PICTURE_URL = "'".mysqli_real_escape_string($db, $_POST['PICTURE_URL'])."'";
+    } else {
+        $PICTURE_URL = "NULL";
+    }
 
-    $result = $db->query("INSERT INTO pitems(ID, NAME, INFO, USAGE1, CREATOR, CREATION_DATE, COMPLETION_DATE) VALUES ('$ID', '$NAME', '$INFO', '$USAGE', '$CREATOR', '$CREATION_DATE', '$COMPLETION_DATE')");
+    $result = $db->query("INSERT INTO pitems(ID, NAME, INFO, USAGE1, CREATOR, CREATION_DATE, COMPLETION_DATE, PICTURE_URL) VALUES ('$ID', '$NAME', '$INFO', '$USAGE', '$CREATOR', '$CREATION_DATE', '$COMPLETION_DATE', $PICTURE_URL)");
 
     if ($result) {
         $response["success"] = 1;
