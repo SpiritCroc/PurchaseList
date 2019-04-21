@@ -187,6 +187,15 @@ if (!empty($creator)) {
         echo "<form method=\"post\">";
         echo "<input type=\"submit\" value=\"Bearbeiten abbrechen\"/>";
         echo "</form>";
+
+        echo "<form target=\"_blank\" action=\"picture_add.php\" method=\"post\" enctype=\"multipart/form-data\">";
+        echo "<label for=\"picture_input\" class=\"btn\">Eigenes Bild: </label>";
+        echo "<input id=\"picture_input\" type=\"file\" name=\"PICTURE\" />";
+        echo "<input type=\"hidden\" name=\"ID\" value=\"".mysqli_real_escape_string($db, $_POST["ID"])."\"/>";
+        echo "<input type=\"hidden\" name=\"UPDATED_BY\" value=\"".$creator."\"/>";
+        echo "<input type=\"submit\" value=\"Hochladen\" />";
+        echo "</p>";
+        echo "</form>";
     } else {
         echo "<h2>Eintrag hinzuf&uuml;gen</h2>";
         echo "<form  method=\"post\">";
