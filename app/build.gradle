@@ -1,5 +1,19 @@
 apply plugin: 'com.android.application'
 
+def getGitDescription = { ->
+    try {
+        def out = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--dirty'
+            standardOutput = out
+        }
+        return out.toString().trim()
+    }
+    catch (err) {
+        return null
+    }
+}
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -10,6 +24,8 @@ android {
         versionCode 8
         versionName "8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
+        buildConfigField "String", "GIT_DESCRIBE", "\"" + getGitDescription() + "\""
     }
     buildTypes {
         release {

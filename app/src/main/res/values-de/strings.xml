@@ -127,6 +127,7 @@
     <string name="title_about">Über</string>
 
     <string name="about_app_summary">Version %1$s (%2$d)</string>
+    <string name="about_app_debug_summary">Debug version %1$s (%2$d)\n%3$s - %4$s</string>
 
     <string name="about_licence_title">Lizenz</string>
     <string name="about_licence_summary">Diese App wird unter der GNU GENERAL PUBLIC LICENSE, Version 3 zur Verfügung gestellt.</string>

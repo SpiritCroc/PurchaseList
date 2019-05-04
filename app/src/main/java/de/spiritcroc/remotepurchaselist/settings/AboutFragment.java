@@ -19,6 +19,10 @@
 package de.spiritcroc.remotepurchaselist.settings;
 
 import android.os.Bundle;
+import android.preference.Preference;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.spiritcroc.remotepurchaselist.BuildConfig;
 import de.spiritcroc.remotepurchaselist.R;
@@ -30,7 +34,15 @@ public class AboutFragment extends BaseSettingsFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.about);
 
-        findPreference("about_app").setSummary(getString(R.string.about_app_summary,
-                BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+        Preference aboutAppVersion = findPreference("about_app");
+        if (BuildConfig.DEBUG) {
+            aboutAppVersion.setSummary(getString(R.string.about_app_debug_summary,
+                    BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, BuildConfig.GIT_DESCRIBE,
+                    SimpleDateFormat.getDateTimeInstance().format(
+                            new Date(BuildConfig.TIMESTAMP))));
+        } else {
+            aboutAppVersion.setSummary(getString(R.string.about_app_summary,
+                    BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+        }
     }
 }
