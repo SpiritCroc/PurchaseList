@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -44,7 +45,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
+
+import java.io.File;
 
 public class EditItemFragment extends DialogFragment
         implements ServerCommunicator.OnHttpsSetupFinishListener {
@@ -56,6 +61,7 @@ public class EditItemFragment extends DialogFragment
     private static final String KEY_INIT_ITEM = DialogFragment.class.getName() + ".init_item";
 
     private static final int RESULT_CODE_ADD_LOCAL_PICTURE = 1;
+    private static final int RESULT_CODE_ADD_CAPTURE_PICTURE = 2;
 
     private boolean mAddItem = true;
     private Item mInitItem;
@@ -69,6 +75,7 @@ public class EditItemFragment extends DialogFragment
     }
     private PictureChangeAction mPictureChangeAction = PictureChangeAction.NONE;
     private String mPictureUrl;
+    private File mCaptureFile;
 
     private OnEditItemResultListener mListener;
 
@@ -150,6 +157,9 @@ public class EditItemFragment extends DialogFragment
                         return true;
                     case R.id.action_picture_reset:
                         resetPicture();
+                        return true;
+                    case R.id.action_picture_capture:
+                        openPictureCaptureChooser();
                         return true;
                     default:
                         return false;
@@ -352,6 +362,20 @@ public class EditItemFragment extends DialogFragment
         }
     }
 
+    private void openPictureCaptureChooser() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        mCaptureFile = LocalPictureHandler.generateCapturePictureFile(getActivity(), "jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getActivity(),
+                "de.spiritcroc.remotepurchaselist.fileprovider", mCaptureFile));
+        if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
+            Log.e(TAG, "No activity to capture pictures found");
+            Toast.makeText(getActivity(), R.string.toast_no_resolver_for_action, Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            startActivityForResult(intent, RESULT_CODE_ADD_CAPTURE_PICTURE);
+        }
+    }
+
     private void updatePicturePreview() {
         if (ServerCommunicator.setupHttps(getActivity(), EditItemFragment.this)) {
             onHttpsReady();
@@ -374,6 +398,14 @@ public class EditItemFragment extends DialogFragment
                     pictureChangeCleanup();
                     // Import new picture
                     new ImportLocalPictureTask().execute(data);
+                    break;
+                case RESULT_CODE_ADD_CAPTURE_PICTURE:
+                    // Clean up previous changes
+                    pictureChangeCleanup();
+                    // Use new picture
+                    if (mCaptureFile.exists()) {
+                        finishLocalPictureImport(mCaptureFile.toURI().toString());
+                    }
                     break;
             }
         }
@@ -406,15 +438,19 @@ public class EditItemFragment extends DialogFragment
         @Override
         protected void onPostExecute(String url) {
             mDialog.dismiss();
-            if (!TextUtils.isEmpty(url)) {
-                // Erase editUrl first - this will lead to change of picture URL and action,
-                // so change these after that
-                mEditPictureUrl.setText("");
-                mEditPictureUrlLayout.setVisibility(View.GONE);
-                mPictureUrl = url;
-                mPictureChangeAction = PictureChangeAction.LOCAL;
-                updatePicturePreview();
-            }
+            finishLocalPictureImport(url);
+        }
+    }
+
+    private void finishLocalPictureImport(String url) {
+        if (!TextUtils.isEmpty(url)) {
+            // Erase editUrl first - this will lead to change of picture URL and action,
+            // so change these after that
+            mEditPictureUrl.setText("");
+            mEditPictureUrlLayout.setVisibility(View.GONE);
+            mPictureUrl = url;
+            mPictureChangeAction = PictureChangeAction.LOCAL;
+            updatePicturePreview();
         }
     }
 

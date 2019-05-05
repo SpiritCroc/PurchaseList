@@ -26,6 +26,7 @@
     <string name="action_search">Search</string>
     <string name="action_sort_order">Order by</string>
     <string name="action_hide_duplicates">Hide duplicates</string>
+    <string name="action_picture_capture">New picture</string>
     <string name="action_picture_local">Select local picture</string>
     <string name="action_picture_url">Enter picture address</string>
     <string name="action_picture_remove">Remove picture</string>

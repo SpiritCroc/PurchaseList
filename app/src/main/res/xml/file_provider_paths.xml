@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- External access required for external camera apps -->
+    <files-path name="picture_upload_cache" path="picture_upload_cache/" />
+</paths>

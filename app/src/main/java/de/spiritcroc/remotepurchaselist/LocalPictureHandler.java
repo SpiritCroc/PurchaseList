@@ -89,6 +89,46 @@ public abstract class LocalPictureHandler {
         return null;
     }
 
+    /*
+    public static String importCapturePictureThumbnail(Context context, Intent intent) {
+        if (intent == null) {
+            Log.e(TAG, "importCapturePicture called with null intent");
+            return null;
+        }
+        Bundle extras = intent.getExtras();
+        if (extras == null) {
+            Log.e(TAG, "importCapturePicture called with null extras");
+            return null;
+        }
+        Bitmap bitmap = (Bitmap) intent.getExtras().get("data");
+        if (bitmap == null) {
+            Log.e(TAG, "importCapturePicture did not get any bitmap");
+            return null;
+        }
+        FileOutputStream out = null;
+        try {
+            File target = generateLocalPictureFile(context, "jpg");
+            out = new FileOutputStream(target);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            // Return resulting uri
+            String result = target.toURI().toString();
+            if (DEBUG) Log.d(TAG, "Inserted new picture: " + result);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+    */
+
     public static void removeLocalPicture(String uri) {
         if (DEBUG) Log.d(TAG, "removeLocalPicture " + uri);
         File f = fileFromURI(uri);
@@ -102,6 +142,10 @@ public abstract class LocalPictureHandler {
         dir.mkdirs();
         String name = System.currentTimeMillis() + "." + extension;
         return new File(dir, name);
+    }
+
+    public static File generateCapturePictureFile(Context context, String extension) {
+        return generateLocalPictureFile(context, extension);
     }
 
     private static File getLocalPictureDir(Context context) {
