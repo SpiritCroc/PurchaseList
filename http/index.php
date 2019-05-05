@@ -4,6 +4,11 @@
 
 require_once __DIR__ . '/db_connect.php';
 
+function reload_site() {
+    header("Location: ".$_SERVER['REQUEST_URI']);
+    exit();
+}
+
 $sortorder = "ORDER BY CREATION_DATE DESC";
 $completedsortorder = "ORDER BY COMPLETION_DATE DESC";
 
@@ -27,9 +32,19 @@ if (isset($_POST["SITE_SHOW_COMPLETED"])) {
     } else {
         $showcompleted = FALSE;
     }
-    setcookie("SHOW_COMPLETED", $showcompleted);
+    setcookie("SHOW_COMPLETED", $showcompleted, 0, "/");
+    reload_site();
 } else {
     $showcompleted = isset($_COOKIE["SHOW_COMPLETED"]) && $_COOKIE["SHOW_COMPLETED"];
+}
+
+if (isset($_POST["BOSS"])) {
+    if ($_POST["BOSS"] == "true") {
+        setcookie("ROLESECRET", htmlspecialchars($_POST["ROLESECRET"]), 0, "/");
+    } else {
+        setcookie("ROLESECRET", "", 0, "/");
+    }
+    reload_site();
 }
 
 $edititem = FALSE;
@@ -38,7 +53,6 @@ $edititem = FALSE;
 echo "<!DOCTYPE html><html><head><link rel=\"stylesheet\" href=\"";
 echo "index.css";
 echo "\"></head><body>";
-
 
 if (!empty($creator)) {
 
@@ -75,9 +89,7 @@ if (!empty($creator)) {
 
             $result = $db->query("INSERT INTO pitems(ID, NAME, INFO, USAGE1, CREATOR, CREATION_DATE, COMPLETION_DATE, PICTURE_URL) VALUES ('$id', '$name', '$info', '$usage', '$creator', '$creation_date', '$completion_date', '$picture_url')");
         }
-        # Refresh site
-        header("Location: ".$_SERVER['REQUEST_URI']);
-        exit();
+        reload_site();
     } elseif (isset($_POST["ID"])) {
         if (isset($_POST["COMPLETION_DATE"])) {
             if (!$dbcon->can_edit()) {
@@ -89,9 +101,7 @@ if (!empty($creator)) {
             $completion_date = number_format(round(microtime(true) * 1000), 0, '', '');
 
             $result = $db->query("UPDATE pitems SET COMPLETION_DATE = '$completion_date', UPDATED_BY = '$creator' WHERE ID = $id");
-            # Refresh site
-            header("Location: ".$_SERVER['REQUEST_URI']);
-            exit();
+            reload_site();
         } else {
             $edititem = TRUE;
         }
@@ -110,6 +120,11 @@ if (!empty($creator)) {
     echo "<input type=\"submit\" value=\"Abmelden\"/>";
     echo "</form>";
     echo "</div>";
+
+    if ($dbcon->can_delete()) {
+        echo "<h1>Boss</h1>";
+        echo "<a target=\"_blank\" href=\"picture_uploads\">Pictures</a>";
+    }
     echo "<h1>Einkaufsliste</h1>";
 
     $result = $db->query("SELECT * FROM pitems WHERE COMPLETION_DATE = -1 $sortorder");
@@ -156,7 +171,7 @@ if (!empty($creator)) {
         echo "<input type=\"submit\" value=\"Erledigt\"/>";
         echo "</form>";
         echo "</div></td>";
-        if (isset($_POST["BOSS"]) && $_POST["BOSS"] == "true") {
+        if ($dbcon->can_delete()) {
             echo "<td>".$item["ID"]."</td>";
         }
         echo "</tr>";
@@ -248,7 +263,7 @@ if (!empty($creator)) {
             }
 
             echo "<tr><td>".$name."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
-            if (isset($_POST["BOSS"]) && $_POST["BOSS"] == "true") {
+            if ($dbcon->can_delete()) {
                 echo "<td>".$item["ID"]."</td>";
             }
             echo "</tr>";
@@ -262,11 +277,12 @@ if (!empty($creator)) {
     }
 
     echo "<div align=\"right\"><form method=\"post\">";
-    if (isset($_POST["BOSS"]) && $_POST["BOSS"] == "true") {
+    if (!empty($_COOKIE['ROLESECRET'])) {
         echo "<input type=\"hidden\" name=\"BOSS\" value=\"false\"/>";
         echo "<input type=\"submit\" value=\"Ich bin nicht der Boss\"/>";
     } else {
         echo "<input type=\"hidden\" name=\"BOSS\" value=\"true\"/>";
+        echo "<input type=\"text\" name=\"ROLESECRET\"/>";
         echo "<input type=\"submit\" value=\"Ich bin der Boss\"/>";
     }
     echo "</form></div>";
