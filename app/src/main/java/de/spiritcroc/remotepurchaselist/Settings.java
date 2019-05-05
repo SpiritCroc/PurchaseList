@@ -149,11 +149,13 @@ public abstract class Settings {
     public static class ThemeNoActionBar {
         public static final int LIGHT = R.style.AppThemeLight_NoActionBar;
         public static final int DARK = R.style.AppThemeDark_NoActionBar;
+        public static final int BOSS = R.style.AppThemeBoss_NoActionBar;
     }
 
     public static final int[] themesNoActionBar = new int[] {
             ThemeNoActionBar.LIGHT,
             ThemeNoActionBar.DARK,
+            ThemeNoActionBar.BOSS,
     };
 
     public static int getThemeNoActionBarRes(int theme) {
@@ -167,10 +169,24 @@ public abstract class Settings {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    private static int getThemePref(Context context) {
+        int pref = getIntFromStringPref(context, THEME, -1);
+        if (pref == -1) {
+            // Automatic
+            if (BossUtils.isBoss(context)) {
+                // Boss theme
+                return 2;
+            }
+            // Day/night
+            return context.getResources().getInteger(R.integer.automatic_theme);
+        }
+        return pref;
+    }
+
     public static int getInt(Context context, String key) {
         switch (key) {
             case THEME:
-                return getIntFromStringPref(context, key, 0);
+                return getThemePref(context);
             case NAME_SUGGESTION_LIMIT:
                 return getIntFromStringPref(context, key, 100);
             case SORT_ORDER:

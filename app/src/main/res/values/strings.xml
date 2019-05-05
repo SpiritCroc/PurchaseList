@@ -103,8 +103,10 @@
     <string name="pref_server_login_password_unset_summary">Password for server access is not set</string>
     <string name="pref_category_ui">User interface</string>
     <string name="pref_theme_title">Theme</string>
+    <string name="pref_theme_auto">Automatic</string>
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
+    <string name="pref_theme_boss">Boss</string>
     <string name="pref_category_other">Other</string>
     <string name="pref_discard_cached_instructions_title">Discard offline instructions</string>
     <string name="pref_discard_cached_instructions_summary">%d requests will be sent to the server when available. Click here to undo all local changes that are not uploaded yet</string>

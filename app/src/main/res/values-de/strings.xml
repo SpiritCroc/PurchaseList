@@ -104,8 +104,10 @@
     <string name="pref_server_login_password_unset_summary">Anmeldepasswort für Serverzugriff ist nicht gesetzt</string>
     <string name="pref_category_ui">Benutzeroberfläche</string>
     <string name="pref_theme_title">Design</string>
+    <string name="pref_theme_auto">Automatisch</string>
     <string name="pref_theme_light">Hell</string>
     <string name="pref_theme_dark">Dunkel</string>
+    <string name="pref_theme_boss">Boss</string>
     <string name="pref_category_other">Weitere</string>
     <string name="pref_discard_cached_instructions_title">Offline-Änderungen verwerfen</string>
     <string name="pref_discard_cached_instructions_summary">%d Änderungen werden bei Möglichkeit an den Server gesendet. Hier klicken, um alle lokalen Änderungen zu verwerfen, welche noch nicht hochgeladen wurden</string>
