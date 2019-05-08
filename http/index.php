@@ -18,6 +18,7 @@ $db = $dbcon->con;
 if (isset($_POST["CREATOR"])) {
     $creator = mysqli_real_escape_string($db, $_POST["CREATOR"]);
     setcookie("CREATOR", $creator);
+    reload_site();
 } elseif (isset($_COOKIE["CREATOR"])) {
     $creator = mysqli_real_escape_string($db, $_COOKIE["CREATOR"]);
 } else {
