@@ -286,6 +286,7 @@ if (!empty($creator)) {
         echo "<input type=\"submit\" value=\"Ich bin der Boss\"/>";
     }
     echo "</form></div>";
+    echo "<a target=\"_blank\" href=\"stats.php\">Statistik</a>";
 
 } else {
     echo "<h1>Wer?</h1>";

@@ -47,6 +47,8 @@ class DB_CONNECT {
             $this->user_role = ROLE_USER;
         } else if (isset($_POST['UPDATED_BY'])) {
             $this->user_role = ROLE_USER;
+        } else if (isset($_COOKIE['CREATOR'])) {
+            $this->user_role = ROLE_USER;
         } else {
             $this->user_role = ROLE_OTHER;
         }
@@ -58,8 +60,8 @@ class DB_CONNECT {
     }
 
     function can_read() {
-        // Everybody can read
-        return true;
+        // Named users can read
+        return $this->user_role != ROLE_OTHER;
     }
 
     function can_add() {
