@@ -60,8 +60,10 @@ class DB_CONNECT {
     }
 
     function can_read() {
-        // Named users can read
-        return $this->user_role != ROLE_OTHER;
+        // Named users can read: requires app update
+        //return $this->user_role != ROLE_OTHER;
+        // All can read
+        return true;
     }
 
     function can_add() {
