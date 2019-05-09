@@ -144,7 +144,9 @@ public class EditItemFragment extends DialogFragment
                         openLocalPictureChooser();
                         return true;
                     case R.id.action_picture_url:
-                        if (mPictureChangeAction == PictureChangeAction.LOCAL) {
+                        if (mPictureChangeAction == PictureChangeAction.LOCAL ||
+                                mPictureUrl == null ||
+                                !mPictureUrl.equals(completePictureUrl(mPictureUrl))) {
                             // Clear
                             mEditPictureUrl.setText("");
                         }
@@ -177,8 +179,16 @@ public class EditItemFragment extends DialogFragment
                             .getSuggestionItemInfosByName(activity, mEditName.getText().toString());
                     mEditInfo.setText(suggestionItem.info);
                     mEditInfo.setSelectAllOnFocus(true);
+                    // mEditPictureUrls entered URLs are treated as absolute, so do this secretly
+                    /*
                     mEditPictureUrl.setText(suggestionItem.pictureUrl);
                     mEditPictureUrl.setSelectAllOnFocus(true);
+                    */
+                    mEditPictureUrl.setText("");// calls pictureChangeCleanup();
+                    mEditPictureUrlLayout.setVisibility(View.GONE);
+                    mPictureUrl = suggestionItem.pictureUrl;
+                    mPictureChangeAction = PictureChangeAction.EXTERNAL;
+                    updatePicturePreview();
                 } else {
                     mEditInfo.setSelectAllOnFocus(false);
                     mEditPictureUrl.setSelectAllOnFocus(false);
@@ -454,11 +464,16 @@ public class EditItemFragment extends DialogFragment
         }
     }
 
+    private String completePictureUrl(String url) {
+        if (!TextUtils.isEmpty(url) && !url.contains("://")) {
+            return  "https://" + url;
+        }
+        return url;
+    }
+
     private void readPictureUrl() {
         mPictureUrl = mEditPictureUrl.getText().toString();
-        if (!TextUtils.isEmpty(mPictureUrl) && !mPictureUrl.contains("://")) {
-            mPictureUrl = "https://" + mPictureUrl;
-        }
+        mPictureUrl = completePictureUrl(mPictureUrl);
         mPictureChangeAction = PictureChangeAction.EXTERNAL;
     }
 
