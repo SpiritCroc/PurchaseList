@@ -18,7 +18,7 @@ if (!$dbcon->can_edit()) {
 
 if (isset($_POST['ID']) && isset($_FILES['PICTURE']) && isset($_POST['UPDATED_BY'])) {
     $ID = mysqli_real_escape_string($db, $_POST['ID']);
-    $UPDATED_BY = mysqli_real_escape_string($db, $_POST['UPDATED_BY']);
+    $UPDATED_BY = mysqli_real_escape_string($db, urldecode($_POST['UPDATED_BY']));
     if (isset($_POST['CREATION_DATE'])) {
         $CREATION_DATE = mysqli_real_escape_string($db, $_POST['CREATION_DATE']);
     } else {
