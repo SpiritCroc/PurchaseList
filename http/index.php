@@ -161,13 +161,11 @@ if (!empty($creator)) {
         echo "<tr><td>".$name."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
         echo "<td><div align=\"center\"><form method=\"post\" action=\"#edit\">";
         echo "<input type=\"hidden\" name=\"ID\" value=\"".$item["ID"]."\"/>";
-        echo "<input type=\"hidden\" name=\"CREATOR\" value=\"".$creator."\"/>";
         echo "<input type=\"submit\" value=\"Bearbeiten\"/>";
         echo "</form>";
         echo "</div></td><td><div align=\"center\">";
         echo "<form method=\"post\">";
         echo "<input type=\"hidden\" name=\"ID\" value=\"".$item["ID"]."\"/>";
-        echo "<input type=\"hidden\" name=\"CREATOR\" value=\"".$creator."\"/>";
         echo "<input type=\"hidden\" name=\"COMPLETION_DATE\" value=\"\"/>";
         echo "<input type=\"submit\" value=\"Erledigt\"/>";
         echo "</form>";
