@@ -324,12 +324,18 @@ public class ServerCommunicator {
                         }
                         MultiPartRequestParameter mp = (MultiPartRequestParameter) param;
                         if (mp.value instanceof String) {
+                            String sendMe = (String) mp.value;
+                            try {
+                                sendMe = URLEncoder.encode(sendMe, "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
                             request1.writeBytes(TWO_HYPHENS + MULTIPART_BOUNDARY + CRLF);
                             request1.writeBytes("Content-Disposition: form-data; name=\"" + mp.key +
                                     "\"" + CRLF);
                             request1.writeBytes("Content-Type: text/plain; charset=UTF-8" + CRLF);
                             request1.writeBytes(CRLF);
-                            request1.writeBytes(mp.value + CRLF);
+                            request1.writeBytes(sendMe + CRLF);
                             request1.flush();
                         } else if (mp.value instanceof File) {
                             File file = (File) mp.value;
