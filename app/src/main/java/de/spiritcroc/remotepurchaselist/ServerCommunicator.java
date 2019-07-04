@@ -18,6 +18,7 @@
 
 package de.spiritcroc.remotepurchaselist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -86,6 +87,9 @@ public class ServerCommunicator {
 
     public interface OnHttpsSetupFinishListener {
         void onHttpsReady();
+        // We need runOnUiThread. Most listeners will be fragments, so we can use this to avoid
+        // the need for extra implementation needs
+        Activity getActivity();
     }
 
     public interface OnFileUploadListener {
@@ -188,7 +192,19 @@ public class ServerCommunicator {
         mHttpsSetupLock.unlock();
         // mHttpsInitialized = true -> nobody should modify this list anymore, we can safely use it
         while (!mHttpsSetupFinishListeners.isEmpty()) {
-            mHttpsSetupFinishListeners.remove(0).onHttpsReady();
+
+            final OnHttpsSetupFinishListener listener = mHttpsSetupFinishListeners.remove(0);
+            try {
+                listener.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onHttpsReady();
+                    }
+                });
+            } catch (Exception e) {
+                // Activity not alive anymore?
+                e.printStackTrace();
+            }
         }
     }
 
