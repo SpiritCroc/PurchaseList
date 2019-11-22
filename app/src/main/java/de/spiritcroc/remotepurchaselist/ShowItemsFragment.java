@@ -535,6 +535,8 @@ public class ShowItemsFragment extends Fragment
             // Push update
             loadContent(true);
         }
+        // Ensure we always have new usages in the suggestion cache
+        UsageSuggestionsRetriever.appendCachedSuggestion(getActivity(), item.usage);
     }
 
     protected void uploadLocalPicture(Item item) {

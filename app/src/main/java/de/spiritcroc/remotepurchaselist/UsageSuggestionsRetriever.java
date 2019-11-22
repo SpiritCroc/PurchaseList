@@ -20,6 +20,7 @@ package de.spiritcroc.remotepurchaselist;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -110,6 +111,25 @@ public class UsageSuggestionsRetriever {
             Log.e(TAG, "Loading usage suggestions failed", e);
             return false;
         }
+    }
+
+    /**
+     * Append cache suggestions for locally edited items.
+     */
+    public static void appendCachedSuggestion(Context context, String suggestion) {
+        if (TextUtils.isEmpty(suggestion)) {
+            return;
+        }
+        String[] suggestions = getCachedSuggestions(context);
+        for (String s: suggestions) {
+            if (suggestion.equals(s)) {
+                return;
+            }
+        }
+        String[] newSuggestions = new String[suggestions.length + 1];
+        System.arraycopy(suggestions, 0, newSuggestions, 0, suggestions.length);
+        newSuggestions[suggestions.length] = suggestion;
+        Settings.putStringArray(context, Settings.USAGE_SUGGESTIONS, newSuggestions);
     }
 
 }
