@@ -43,12 +43,13 @@
         </com.google.android.material.textfield.TextInputLayout>
         <ImageView
             android:id="@+id/quick_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/dialog_quick_add"
+            android:layout_height="@dimen/dialog_quick_add"
+            android:padding="@dimen/dialog_quick_add_padding"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_quick_add"
             android:tint="?attr/colorAccent"
-            android:padding="4dp"/>
+            style="@style/Widget.AppCompat.Button.Borderless" />
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout

@@ -33,6 +33,8 @@
     <dimen name="dialog_horizontal_padding">8dp</dimen>
     <dimen name="dialog_top_padding">4dp</dimen>
     <dimen name="dialog_picture_selection_preview">96dp</dimen>
+    <dimen name="dialog_quick_add">46dp</dimen>
+    <dimen name="dialog_quick_add_padding">4dp</dimen>
 
     <dimen name="list_divider_height">1dp</dimen>
 
