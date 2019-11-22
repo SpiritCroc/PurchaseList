@@ -188,7 +188,7 @@ public abstract class Settings {
             case THEME:
                 return getThemePref(context);
             case NAME_SUGGESTION_LIMIT:
-                return getIntFromStringPref(context, key, 100);
+                return getIntFromStringPref(context, key, 1000);
             case SORT_ORDER:
             case SORT_ORDER_COMPLETED:
                 return getSharedPreferences(context).getInt(key, 0);
