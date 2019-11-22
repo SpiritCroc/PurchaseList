@@ -122,6 +122,12 @@ public class EditItemFragment extends DialogFragment
         mEditPictureUrl = (EditText) dialogView.findViewById(R.id.picture_url_edit);
         mEditPictureUrlLayout = dialogView.findViewById(R.id.picture_url_edit_layout);
         mEditPicture = (ImageView) dialogView.findViewById(R.id.picture_edit);
+        dialogView.findViewById(R.id.quick_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemSubmit();
+            }
+        });
         if (mEditItem != null) {
             mEditName.setText(mEditItem.name);
             mEditInfo.setText(mEditItem.info);
@@ -241,22 +247,7 @@ public class EditItemFragment extends DialogFragment
                         .setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Item preview = getPreview(true);
-                                if (preview == null) {
-                                    return;
-                                }
-                                if (mInitItem == null || !preview.name.equals(mInitItem.name)
-                                        || !preview.info.equals(mInitItem.info)
-                                        || !preview.usage.equals(mInitItem.usage)
-                                        || !preview.pictureUrl.equals(mInitItem.pictureUrl)
-                                        || !preview.localPictureUrl.equals(
-                                                mInitItem.localPictureUrl)) {
-                                    // Something has changed
-                                    mListener.onEditItemResult(mAddItem, preview,
-                                            mPictureChangeAction == PictureChangeAction.LOCAL,
-                                            mPictureChangeAction != PictureChangeAction.EXTERNAL);
-                                } // else: no update needed, only close dialog
-                                dismiss();
+                                itemSubmit();
                             }
                         });
             }
@@ -267,6 +258,25 @@ public class EditItemFragment extends DialogFragment
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
         );*/
         return dialog;
+    }
+
+    private void itemSubmit() {
+        Item preview = getPreview(true);
+        if (preview == null) {
+            return;
+        }
+        if (mInitItem == null || !preview.name.equals(mInitItem.name)
+                || !preview.info.equals(mInitItem.info)
+                || !preview.usage.equals(mInitItem.usage)
+                || !preview.pictureUrl.equals(mInitItem.pictureUrl)
+                || !preview.localPictureUrl.equals(
+                mInitItem.localPictureUrl)) {
+            // Something has changed
+            mListener.onEditItemResult(mAddItem, preview,
+                    mPictureChangeAction == PictureChangeAction.LOCAL,
+                    mPictureChangeAction != PictureChangeAction.EXTERNAL);
+        } // else: no update needed, only close dialog
+        dismiss();
     }
 
     private Item getPreview(boolean enforceCorrectness) {

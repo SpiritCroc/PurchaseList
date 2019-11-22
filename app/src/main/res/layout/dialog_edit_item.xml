@@ -23,18 +23,33 @@
     android:paddingRight="@dimen/dialog_horizontal_padding"
     android:paddingTop="@dimen/dialog_top_padding">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/name_edit"
-            android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_item_name"
-            android:completionThreshold="@integer/completion_threshold"
-            android:inputType="text"
-            android:imeOptions="actionNext"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical">
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/name_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_item_name"
+                android:completionThreshold="@integer/completion_threshold"
+                android:inputType="text"
+                android:imeOptions="actionNext"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <ImageView
+            android:id="@+id/quick_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_quick_add"
+            android:tint="?attr/colorAccent"
+            android:padding="4dp"/>
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
