@@ -253,10 +253,9 @@ public class EditItemFragment extends DialogFragment
             }
         });
         // We want to edit
-        /* but we don't want to hide information with the keyboard in case for small displays
         dialog.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
-        );*/
+        );
         return dialog;
     }
 
