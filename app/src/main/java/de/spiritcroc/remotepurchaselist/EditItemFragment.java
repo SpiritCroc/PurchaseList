@@ -243,6 +243,9 @@ public class EditItemFragment extends DialogFragment
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
+                // We want to edit
+                mEditName.requestFocus();
+                // Submit button with input verification
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                         .setOnClickListener(new View.OnClickListener() {
                             @Override
