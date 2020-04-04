@@ -45,7 +45,7 @@
         android:id="@android:id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_gravity="center"
         android:layout_marginEnd="@dimen/checkbox_padding"
         android:layout_marginLeft="@dimen/checkbox_padding"
         android:layout_marginRight="@dimen/checkbox_padding"
