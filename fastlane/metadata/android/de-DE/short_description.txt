@@ -1,0 +1,1 @@
+Einkaufsliste, die mit einem Server synchronisiert wird

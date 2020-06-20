@@ -1,0 +1,5 @@
+Purchase list, inteded to use with a central server that stores the database, and remote devices using this app that can view and modify the list.
+The app also allows to view a cached list and offline modifications that can get synchronized later.
+
+The server part can be found here: https://github.com/SpiritCroc/PurchaseList/tree/server
+The app source code can be found here: https://github.com/SpiritCroc/PurchaseList/tree/android

@@ -1,0 +1,5 @@
+Einkaufsliste zur Verwendung mit einer Zentralen Liste, gespeichert in einer Datenbank auf einem Server, welche von den mobilen Geräten durch diese App betrachtet und bearbeitet werden kann.
+Die App erlaubt des weiteren einen Offline-Zugang zu der zuletzt angeforderten Liste, welche lokal bearbeitet werden kann, bis die Änderungen wieder synchronisiert werden.
+
+Benötigte Serverelemente: https://github.com/SpiritCroc/PurchaseList/tree/server
+Quellcode der App: https://github.com/SpiritCroc/PurchaseList/tree/android
