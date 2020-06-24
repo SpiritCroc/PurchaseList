@@ -116,13 +116,15 @@ public class EditItemFragment extends DialogFragment
 
         final View dialogView = activity.getLayoutInflater()
                 .inflate(R.layout.dialog_edit_item, null);
+        final View titleView = activity.getLayoutInflater()
+                .inflate(R.layout.dialog_title_material_with_button, null);
         mEditName = (AutoCompleteTextView) dialogView.findViewById(R.id.name_edit);
         mEditInfo = (EditText) dialogView.findViewById(R.id.info_edit);
         mEditUsage = (AutoCompleteTextView) dialogView.findViewById(R.id.usage_edit);
         mEditPictureUrl = (EditText) dialogView.findViewById(R.id.picture_url_edit);
         mEditPictureUrlLayout = dialogView.findViewById(R.id.picture_url_edit_layout);
         mEditPicture = (ImageView) dialogView.findViewById(R.id.picture_edit);
-        dialogView.findViewById(R.id.quick_add).setOnClickListener(new View.OnClickListener() {
+        titleView.findViewById(R.id.quick_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 itemSubmit();
@@ -228,8 +230,11 @@ public class EditItemFragment extends DialogFragment
                 updatePicturePreview();
             }
         });
+        ((TextView) titleView.findViewById(android.R.id.title))
+                .setText(mAddItem ? R.string.add_item_title : R.string.edit_item_title);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                .setTitle(mAddItem ? R.string.add_item_title : R.string.edit_item_title)
+                .setCustomTitle(titleView)
+                //.setTitle(mAddItem ? R.string.add_item_title : R.string.edit_item_title)
                 .setView(dialogView)
                 .setPositiveButton(R.string.ok, null)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
