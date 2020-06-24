@@ -35,6 +35,9 @@ android {
                 disable 'MissingTranslation'
             }
         }
+        debug {
+            applicationIdSuffix ".debug"
+        }
     }
 }
 
