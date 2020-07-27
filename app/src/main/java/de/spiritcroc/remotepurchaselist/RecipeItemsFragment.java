@@ -336,6 +336,7 @@ public class RecipeItemsFragment extends ShowItemsFragment {
                             addItem.id = System.currentTimeMillis();
                             addItem.creationDate = System.currentTimeMillis();
                             addItem.creator = Settings.getString(getActivity(), Settings.WHOAMI);
+                            addItem.updatedBy = Settings.getString(getActivity(), Settings.WHOAMI);
                             addItem.completionDate = -1;
                             RecipeItemsFragment.this.editItem(true, addItem, false, false);
                         }
