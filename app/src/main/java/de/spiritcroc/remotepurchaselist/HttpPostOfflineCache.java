@@ -389,9 +389,11 @@ public abstract class HttpPostOfflineCache {
                 continue;
             }
             if (items.contains(overlay)) {
+                if (DEBUG) Log.d(TAG, "previewCache: remove old " + overlay);
                 // Already an item in the list with the same ID, remove it for the preview
                 items.remove(overlay);
             }
+            if (DEBUG) Log.d(TAG, "previewCache: add " + overlay);
             // Add it at the beginning
             items.add(0, overlay);
         }

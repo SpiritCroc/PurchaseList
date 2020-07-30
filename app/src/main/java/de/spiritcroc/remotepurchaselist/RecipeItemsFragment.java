@@ -331,9 +331,10 @@ public class RecipeItemsFragment extends ShowItemsFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Add items back
+                        long id = System.currentTimeMillis();
                         for (Item item: mSelection) {
                             Item addItem = item.copy();
-                            addItem.id = System.currentTimeMillis();
+                            addItem.id = id++;
                             addItem.creationDate = System.currentTimeMillis();
                             addItem.creator = Settings.getString(getActivity(), Settings.WHOAMI);
                             addItem.updatedBy = Settings.getString(getActivity(), Settings.WHOAMI);
