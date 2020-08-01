@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/edit_item_name"
             android:completionThreshold="@integer/completion_threshold"
-            android:inputType="text"
+            android:inputType="textCapSentences"
             android:imeOptions="actionNext"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/edit_item_info"
             android:completionThreshold="@integer/completion_threshold"
-            android:inputType="text"
+            android:inputType="textCapSentences"
             android:imeOptions="actionNext"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/edit_item_usage"
             android:completionThreshold="@integer/completion_threshold"
-            android:inputType="text"
+            android:inputType="textCapSentences"
             android:imeOptions="actionDone"/>
     </com.google.android.material.textfield.TextInputLayout>
 
