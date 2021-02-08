@@ -158,6 +158,10 @@ if (!empty($creator)) {
         if (!empty($item["PICTURE_URL"])) {
             $name = "<a target=\"_blank\" href=\"".$item["PICTURE_URL"]."\">$name</a>";
         }
+        # Silence warning
+        if (!isset($item["UPDATED_BY"])) {
+            $item["UPDATED_BY"] = "";
+        }
         echo "<tr><td>".$name."</td><td>".$item["INFO"]."</td><td>".$item["USAGE"]."</td><td>".$itemdate."</td><td>".$item["CREATOR"]."</td><td>".$item["UPDATED_BY"]."</td>";
         echo "<td><div align=\"center\"><form method=\"post\" action=\"#edit\">";
         echo "<input type=\"hidden\" name=\"ID\" value=\"".$item["ID"]."\"/>";
@@ -175,7 +179,7 @@ if (!empty($creator)) {
         }
         echo "</tr>";
 
-        if ($item["ID"] == $_POST["ID"]) {
+        if (isset($_POST["ID"]) && $item["ID"] == $_POST["ID"]) {
             $editname = $item["NAME"];
             $editinfo = $item["INFO"];
             $editusage = $item["USAGE"];

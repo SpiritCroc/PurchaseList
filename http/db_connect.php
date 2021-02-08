@@ -39,9 +39,9 @@ class DB_CONNECT {
     }
 
     function detect_user_role() {
-        if ($_POST['ROLESECRET'] == ROLE_ADMIN_SECRET) {
+        if (isset($_POST['ROLESECRET']) && $_POST['ROLESECRET'] == ROLE_ADMIN_SECRET) {
             $this->user_role = ROLE_ADMIN;
-        } else if ($_COOKIE['ROLESECRET'] == ROLE_ADMIN_SECRET) {
+        } else if (isset($_COOKIE['ROLESECRET']) && $_COOKIE['ROLESECRET'] == ROLE_ADMIN_SECRET) {
             $this->user_role = ROLE_ADMIN;
         } else if (!empty($this->user_override)) {
             $this->user_role = ROLE_USER;
