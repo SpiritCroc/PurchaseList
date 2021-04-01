@@ -441,6 +441,7 @@ public class ServerCommunicator {
         }
 
         if (json == null) {
+            if (DEBUG) Log.d(TAG, "Received no result");
             return null;
         }
         if (DEBUG) Log.d(TAG, "Received result:\n" + json);
