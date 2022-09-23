@@ -245,10 +245,14 @@ if (!empty($creator)) {
             }
             if ($row["USAGE1"] !== null) {
                 $item["USAGE"] = htmlspecialchars($row["USAGE1"]);
+            } else {
+                $item["USAGE"] = "";
             }
             $item["CREATOR"] = htmlspecialchars($row["CREATOR"]);
             if ($row["UPDATED_BY"] !== null) {
                 $item["UPDATED_BY"] = htmlspecialchars($row["UPDATED_BY"]);
+            } else {
+                $item["UPDATED_BY"] = "";
             }
             $item["CREATION_DATE"] = htmlspecialchars($row["CREATION_DATE"]);
             if ($row["COMPLETION_DATE"] !== null) {

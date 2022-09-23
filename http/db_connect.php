@@ -23,6 +23,7 @@ class DB_CONNECT {
     function connect() {
         require_once __DIR__ . '/db_config.php';
         $this->con = new \mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
+        $this->con->set_charset('utf8mb4');
         if ($this->con->connect_errno) {
             $response = array();
             $response["success"] = 0;

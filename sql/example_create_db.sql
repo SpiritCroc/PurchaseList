@@ -1,4 +1,5 @@
 CREATE DATABASE IF NOT EXISTS yourdatabase;
+ALTER DATABASE einkaufsliste charset=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS yourdatabase.pitems(
     ID BIGINT PRIMARY KEY,
