@@ -8,3 +8,7 @@
 /captures
 .externalNativeBuild
 TODO.md
+
+/fastlane/private
+/fastlane/report.xml
+/fastlane/README.md
