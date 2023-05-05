@@ -173,10 +173,12 @@ public abstract class Settings {
         int pref = getIntFromStringPref(context, THEME, -1);
         if (pref == -1) {
             // Automatic
+            /*
             if (BossUtils.isBoss(context)) {
                 // Boss theme
                 return 2;
             }
+             */
             // Day/night
             return context.getResources().getInteger(R.integer.automatic_theme);
         }
