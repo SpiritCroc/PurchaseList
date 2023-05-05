@@ -81,10 +81,12 @@
             android:title="@string/pref_suggestion_cache_limit_title"
             android:inputType="number" /><!-- Missing default value on purpose: empty for default -->
 
+        <!--
         <Preference
             android:key="clear_trusted_certificates"
             android:title="@string/pref_clear_trusted_certificates_title"
             android:summary="@string/pref_clear_trusted_certificates_summary" />
+            -->
 
     </PreferenceCategory>
 

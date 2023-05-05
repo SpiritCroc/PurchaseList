@@ -64,8 +64,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
-import at.bitfire.cert4android.CustomCertManager;
-
 public class ServerCommunicator {
 
     private static final String TAG = ServerCommunicator.class.getSimpleName();
@@ -162,7 +160,7 @@ public class ServerCommunicator {
         final Context appContext = context.getApplicationContext();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
-            TrustManager[] trustManagers = new TrustManager[]{new CustomCertManager(appContext)};
+            TrustManager[] trustManagers = null; //new TrustManager[]{new CustomCertManager(appContext)};
             sslContext.init(null, trustManagers, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
             final HostnameVerifier defaultHostnameVerifier =
@@ -285,7 +283,7 @@ public class ServerCommunicator {
         if (DEBUG) Log.d(TAG, "Requesting to " + address + " with parameters " + parameters);
 
         HttpURLConnection connection = null;
-        CustomCertManager certManager = null;
+        //CustomCertManager certManager = null;
         OutputStreamWriter request = null;
         DataOutputStream request1 = null;
         InputStreamReader isr = null;
@@ -308,8 +306,8 @@ public class ServerCommunicator {
                 in = context.getAssets().open("demo-request.txt");
             } else {
                 URL url = new URL(address);
-                certManager = new CustomCertManager(context, true, true, true);
-                connection = getHttpUrlConnection(certManager, url);
+                //certManager = new CustomCertManager(context, true, true, true);
+                connection = getHttpUrlConnection(/*certManager,*/ url);
                 if (authorization != null) {
                     connection.setRequestProperty("Authorization", authorization);
                 }
@@ -435,9 +433,11 @@ public class ServerCommunicator {
                     e.printStackTrace();
                 }
             }
+            /*
             if (certManager != null) {
                 certManager.close();
             }
+             */
         }
 
         if (json == null) {
@@ -498,16 +498,16 @@ public class ServerCommunicator {
         return currentParameters;
     }
 
-    private static HttpURLConnection getHttpUrlConnection(CustomCertManager certManager, URL url)
+    private static HttpURLConnection getHttpUrlConnection(/*CustomCertManager certManager, */URL url)
             throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         if (connection instanceof HttpsURLConnection) {
             final HttpsURLConnection sConnection = (HttpsURLConnection) connection;
-            sConnection.setHostnameVerifier(certManager.hostnameVerifier(
-                    sConnection.getHostnameVerifier()));
+            //sConnection.setHostnameVerifier(certManager.hostnameVerifier(
+            //        sConnection.getHostnameVerifier()));
             try {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[]{certManager}, null);
+                sslContext.init(null, null /*new TrustManager[]{certManager}*/, null);
                 sConnection.setSSLSocketFactory(sslContext.getSocketFactory());
             } catch (NoSuchAlgorithmException|KeyManagementException e) {
                 // Use default TrustManager

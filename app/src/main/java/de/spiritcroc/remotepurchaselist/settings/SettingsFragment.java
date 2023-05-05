@@ -27,7 +27,6 @@ import android.text.TextUtils;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import at.bitfire.cert4android.CustomCertManager;
 import de.spiritcroc.remotepurchaselist.HttpPostOfflineCache;
 import de.spiritcroc.remotepurchaselist.R;
 import de.spiritcroc.remotepurchaselist.Settings;
@@ -37,7 +36,7 @@ public class SettingsFragment extends BaseSettingsFragment
         Preference.OnPreferenceClickListener{
 
     private static final String DISCARD_CACHED_INSTRUCTIONS = "discard_cached_instructions";
-    private static final String CLEAR_TRUSTED_CERTIFICATES = "clear_trusted_certificates";
+    //private static final String CLEAR_TRUSTED_CERTIFICATES = "clear_trusted_certificates";
 
     private EditTextPreference mWhoami;
     private EditTextPreference mServerUrl;
@@ -45,7 +44,7 @@ public class SettingsFragment extends BaseSettingsFragment
     private EditTextPreference mServerPassword;
     private ListPreference mTheme;
     private Preference mDiscardCachedInstructions;
-    private Preference mClearTrustedCertificates;
+    //private Preference mClearTrustedCertificates;
     private Preference mNameSuggestionLimit;
 
     private Snackbar mSnackbar;
@@ -61,11 +60,11 @@ public class SettingsFragment extends BaseSettingsFragment
         mServerPassword = (EditTextPreference) findPreference(Settings.SERVER_LOGIN_PASSWORD);
         mTheme = (ListPreference) findPreference(Settings.THEME);
         mDiscardCachedInstructions = findPreference(DISCARD_CACHED_INSTRUCTIONS);
-        mClearTrustedCertificates = findPreference(CLEAR_TRUSTED_CERTIFICATES);
+        //mClearTrustedCertificates = findPreference(CLEAR_TRUSTED_CERTIFICATES);
         mNameSuggestionLimit = findPreference(Settings.NAME_SUGGESTION_LIMIT);
 
         mDiscardCachedInstructions.setOnPreferenceClickListener(this);
-        mClearTrustedCertificates.setOnPreferenceClickListener(this);
+        //mClearTrustedCertificates.setOnPreferenceClickListener(this);
     }
 
     private void init() {
@@ -115,6 +114,7 @@ public class SettingsFragment extends BaseSettingsFragment
             HttpPostOfflineCache.clearCache(getActivity());
             updateDiscardCachedInstructions();
             return true;
+            /*
         } else if (preference == mClearTrustedCertificates) {
             try {
                 CustomCertManager.Companion.resetCertificates(getActivity());
@@ -126,6 +126,7 @@ public class SettingsFragment extends BaseSettingsFragment
                         Snackbar.LENGTH_SHORT);
             }
             return true;
+             */
         } else {
             return false;
         }

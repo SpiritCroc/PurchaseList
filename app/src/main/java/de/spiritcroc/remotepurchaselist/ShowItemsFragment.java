@@ -66,7 +66,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.bitfire.cert4android.CustomCertService;
 import de.spiritcroc.remotepurchaselist.settings.AboutActivity;
 import de.spiritcroc.remotepurchaselist.settings.SettingsActivity;
 
@@ -118,7 +117,7 @@ public class ShowItemsFragment extends Fragment
     // Thanks to schaarsc <schaarsc> for https://github.com/stefan-
     // niedermann/nextcloud-notes/commit/b3c2cc2f0e1228b07b55658ff8fa6a244533f5c1
     // (only sync if cert4android service is available)
-    private boolean mCert4androidReady = false;
+    //private boolean mCert4androidReady = false;
 
     private ActionMode.Callback mSelectedItemsActionModeCallback = new ActionMode.Callback() {
         @Override
@@ -183,6 +182,7 @@ public class ShowItemsFragment extends Fragment
             showItemFragment.setItemInteractionListener(this);
         }
 
+        /*
         getActivity().getApplicationContext()
                 .bindService(new Intent(getActivity(), CustomCertService.class),
                         new ServiceConnection() {
@@ -202,6 +202,7 @@ public class ShowItemsFragment extends Fragment
                                 mCert4androidReady = false;
                             }
                         }, Context.BIND_AUTO_CREATE);
+        */
     }
 
     @Override
@@ -317,9 +318,9 @@ public class ShowItemsFragment extends Fragment
             // Don't start download when in action mode, as this would close it
             if (mActionMode == null) {
                 if (mResumeDownloadNeeded) {
-                    if (mCert4androidReady) {
+                    //if (mCert4androidReady) {
                         loadContent(true);
-                    }
+                    //}
                 }
             }
             // Update suggestions if necessary
