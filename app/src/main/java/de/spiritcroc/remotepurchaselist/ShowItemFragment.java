@@ -22,7 +22,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,7 +34,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
+
+import java.io.File;
 
 public class ShowItemFragment extends DialogFragment
         implements ServerCommunicator.OnHttpsSetupFinishListener {
@@ -51,6 +60,42 @@ public class ShowItemFragment extends DialogFragment
     public ShowItemFragment setItemInteractionListener(ItemInteractionListener listener) {
         mListener = listener;
         return this;
+    }
+
+    // https://github.com/bumptech/glide/issues/459#issuecomment-99960446
+    class ViewImageTask extends AsyncTask<Object, Void, File> {
+        private final Context context;
+        public ViewImageTask(Context context) {
+            this.context = context;
+        }
+        @Override protected File doInBackground(Object... params) {
+            Object url = params[0]; // should be easy to extend to share multiple images at once
+            try {
+                // Glide v4
+                return Glide
+                        .with(context)
+                        .downloadOnly()
+                        .load(url)
+                        .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .get() // needs to be called on background thread
+                        ;
+            } catch (Exception ex) {
+                Log.w("SHARE", "Sharing " + url + " failed", ex);
+                return null;
+            }
+        }
+        @Override protected void onPostExecute(File result) {
+            if (result == null) { return; }
+            Uri uri = FileProvider.getUriForFile(context, Constants.fileProvider(context), result);
+            share(uri); // startActivity probably needs UI thread
+        }
+
+        private void share(Uri uri) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "image/jpeg");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -89,6 +134,17 @@ public class ShowItemFragment extends DialogFragment
             if (ServerCommunicator.setupHttps(getActivity(), ShowItemFragment.this)) {
                 onHttpsReady();
             }
+            mPictureView.setOnClickListener(new View.OnClickListener() {
+                private ViewImageTask mViewImageTask;
+                @Override
+                public void onClick(View v) {
+                    if (mViewImageTask != null) {
+                        mViewImageTask.cancel(false);
+                    }
+                    mViewImageTask = new ViewImageTask(mPictureView.getContext());
+                    mViewImageTask.execute(mItem.getPictureUrl(getActivity()));
+                }
+            });
         } else {
             mPictureView.setVisibility(View.GONE);
         }

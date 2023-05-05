@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths>
+<paths xmlns:tools="http://schemas.android.com/tools">
     <!-- External access required for external camera apps -->
     <files-path name="picture_upload_cache" path="picture_upload_cache/" />
+
+    <!-- https://github.com/bumptech/glide/issues/459#issuecomment-99960446 -->
+    <!-- Based on default Glide operation, see InternalCacheDiskCacheFactory instantiated from GlideBuilder.createGlide() -->
+    <cache-path name="share" path="image_manager_disk_cache" tools:path="DiskCache.Factory.DEFAULT_DISK_CACHE_DIR" />
 </paths>

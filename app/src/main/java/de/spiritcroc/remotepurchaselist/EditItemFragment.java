@@ -395,7 +395,7 @@ public class EditItemFragment extends DialogFragment
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         mCaptureFile = LocalPictureHandler.generateCapturePictureFile(getActivity(), "jpg");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getActivity(),
-                "de.spiritcroc.remotepurchaselist.fileprovider", mCaptureFile));
+                Constants.fileProvider(getActivity()), mCaptureFile));
         if (intent.resolveActivity(getActivity().getPackageManager()) == null) {
             Log.e(TAG, "No activity to capture pictures found");
             Toast.makeText(getActivity(), R.string.toast_no_resolver_for_action, Toast.LENGTH_LONG)

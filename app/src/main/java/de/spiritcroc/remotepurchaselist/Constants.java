@@ -18,6 +18,8 @@
 
 package de.spiritcroc.remotepurchaselist;
 
+import android.content.Context;
+
 public final class Constants {
 
     // Don't instantiate
@@ -65,5 +67,9 @@ public final class Constants {
         public static final String HIDE_OLDER_DUPLICATES = "hideOldDuplicates";
 
         public static final String EMPTY_FALLBACK = "{\"items\":[],\"success\":1}";
+    }
+
+    public static String fileProvider(Context context) {
+        return context.getPackageName() + ".fileprovider";
     }
 }
