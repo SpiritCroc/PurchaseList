@@ -53,7 +53,7 @@
             android:key="overview_picture_preview"
             android:title="@string/pref_overview_picture_preview_title"
             android:summary="@string/pref_overview_picture_preview_summary"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <PreferenceScreen
             android:title="@string/pref_date_time_format_title"
@@ -65,7 +65,7 @@
             android:title="@string/pref_dino_title"
             android:summaryOn="@string/pref_dino_summary_on"
             android:summaryOff="@string/pref_dino_summary_off"
-            android:defaultValue="false"/>
+            android:defaultValue="true"/>
 
     </PreferenceCategory>
 

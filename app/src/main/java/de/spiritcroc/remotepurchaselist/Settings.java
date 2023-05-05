@@ -216,13 +216,14 @@ public abstract class Settings {
 
     public static boolean getBoolean(Context context, String key) {
         switch (key) {
-            case DINO:
             case SIMULATE_SLOW_INTERNET:
             case DEMO_LIST:
             case HIDE_DUPLICATES_COMPLETED:
             case BOSS_MODE:
-            case OVERVIEW_PICTURE_PREVIEW:
                 return getSharedPreferences(context).getBoolean(key, false);
+            case DINO:
+            case OVERVIEW_PICTURE_PREVIEW:
+                return getSharedPreferences(context).getBoolean(key, true);
             default:
                 Log.e(TAG, "getBoolean: unknown key " + key);
                 return false;
