@@ -42,7 +42,7 @@ $files = glob("user*");
 for ($i = 0; $i < count($files); $i++) {
     $image = $files[$i];
     echo "<h3>".basename($image)." (".filesize($image).")</h3>";
-    echo '<img width="50%" src="'.$image.'"/>';
+    echo '<img width="100" src="'.$image.'"/>';
 
     if (is_delete_allowed($image)) {
         echo "<form method=\"post\">";
