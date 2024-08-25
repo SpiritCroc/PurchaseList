@@ -38,6 +38,7 @@ import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.ortiz.touchview.TouchImageView;
 
 import java.io.File;
 
@@ -48,7 +49,7 @@ public class ShowItemFragment extends DialogFragment
     private static final String KEY_ITEM = DialogFragment.class.getName() + ".item";
 
     private Item mItem;
-    private ImageView mPictureView;
+    private TouchImageView mPictureView;
 
     private ItemInteractionListener mListener;
 
@@ -128,7 +129,8 @@ public class ShowItemFragment extends DialogFragment
         dateView.setText(ShowItemsFragment.getFormattedDate(getActivity(),
                 mItem.completionDate > mItem.creationDate
                         ? mItem.completionDate : mItem.creationDate));
-        mPictureView = (ImageView) dialogView.findViewById(R.id.picture);
+        mPictureView = dialogView.findViewById(R.id.picture);
+        mPictureView.setMaxZoom(5f);
         if (mItem.hasPicture()) {
             mPictureView.setVisibility(View.VISIBLE);
             if (ServerCommunicator.setupHttps(getActivity(), ShowItemFragment.this)) {
