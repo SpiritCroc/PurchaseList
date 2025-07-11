@@ -18,12 +18,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_simple" />
 
     <FrameLayout
         android:id="@+id/content"
+        android:background="?android:colorBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
